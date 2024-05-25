@@ -9,6 +9,8 @@ app.get("/api/v1/health", (req: Request, res: Response) => {
 	res.send("Hello, TypeScript Express!");
 });
 
+app.use(express.json());
+
 app.use("/api/v1/kamus", kamusRouter);
 
 app.use("/api/v1/users", usersRouter);
