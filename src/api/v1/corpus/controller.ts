@@ -1,4 +1,10 @@
-import { getAllCorpus, createCorpus, getOneCorpus } from "./service";
+import {
+	getAllCorpus,
+	createCorpus,
+	getOneCorpus,
+	deleteOneCorpus,
+	updateOneCorpus,
+} from "./service";
 import { NewCorpus } from "../../../models/corpus";
 import { db } from "../../../database";
 import { NextFunction, Request, Response } from "express";
@@ -11,7 +17,7 @@ export const indexAllCorpus = async (
 	try {
 		const result = await getAllCorpus(req);
 
-		res.status(200).json({ data: result, pagination:{}});
+		res.status(200).json({ data: result, pagination: {} });
 	} catch (error) {
 		next(error);
 	}
@@ -23,10 +29,15 @@ export const indexOneCorpus = async (
 	next: NextFunction
 ) => {
 	try {
-		const result = await getOneCorpus(req);
-		res.status(200).json({ data: result });
-	} catch (error) {
-		next(error);
+		const { result, status } = await getOneCorpus(req);
+		res.status(status).json({ data: result });
+	} catch (error: any) {
+		if (error && typeof error === "object" && "status" in error) {
+			const { message, status } = error;
+			res.status(status).json({ status, error: message });
+		} else {
+			res.status(500).json({ status: 500, error: "Unknown error occurred" });
+		}
 	}
 };
 
@@ -40,5 +51,41 @@ export const postCorpus = async (
 		res.status(201).json(result);
 	} catch (error) {
 		next(error);
+	}
+};
+
+export const deleteCorpus = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const result = await deleteOneCorpus(req);
+		res.status(result.status).json(result);
+	} catch (error: any) {
+		if (error && typeof error === 'object' && 'status' in error) {
+			const { message, status } = error;
+			res.status(status).json({ status, error: message });
+		} else {
+			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+		}
+	}
+};
+
+export const putCorpus = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { message, status } = await updateOneCorpus(req);
+		res.status(status).json({ message });
+	} catch (error: any) {
+		if (error && typeof error === 'object' && 'status' in error) {
+			const { message, status } = error;
+			res.status(status).json({ status, error: message });
+		} else {
+			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+		}
 	}
 };

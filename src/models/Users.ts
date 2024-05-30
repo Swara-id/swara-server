@@ -16,10 +16,11 @@ export interface UsersTable {
 	about: string;
 	profilePicURL: string;
 
-	createdAt: ColumnType<Date, string | undefined, never>;
-	updatedAt: ColumnType<Date, string | undefined>;
+	createdAt: ColumnType<Date>;
+	updatedAt: ColumnType<Date>;
 }
 
 export type Users = Selectable<UsersTable>;
 export type NewUsers = Insertable<UsersTable>;
 export type UsersUpdate = Updateable<UsersTable>;
+
