@@ -13,9 +13,11 @@
 		videoURL: string | undefined;
 		type: "word" | "letter";
 		value: string;
-		createdAt: ColumnType<Date, string | undefined, never>;
-		updatedAt: ColumnType<Date, string | undefined>;
+		createdAt: ColumnType<Date>;
+		updatedAt: ColumnType<Date>;
 	}
+
+	
 
 	export type Corpus = Selectable<CorpusTable>;
 	export type NewCorpus = Insertable<CorpusTable>;
