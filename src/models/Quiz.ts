@@ -34,8 +34,6 @@ interface Choices {
 	  createdAt: ColumnType<Date>;
 	  updatedAt: ColumnType<Date>;
   }
-  
-  
 
 export type Quiz = Selectable<QuizTable>;
 export type NewQuiz = Insertable<QuizTable>;
