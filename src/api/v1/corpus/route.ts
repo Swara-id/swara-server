@@ -1,16 +1,23 @@
-import { indexAllCorpus, postCorpus,indexOneCorpus, deleteCorpus,putCorpus } from './controller';
+import { multerMid } from "./../../../middleware/multer";
+import {
+	indexAllCorpus,
+	postCorpus,
+	indexOneCorpus,
+	deleteCorpus,
+	putCorpus,
+} from "./controller";
 import { Router, Request, Response } from "express";
 
 const router = Router();
 
 router.get("/", indexAllCorpus);
 
-router.get("/:id",indexOneCorpus)
+router.get("/:id", indexOneCorpus);
 
-router.post("/", postCorpus)
+router.post("/", multerMid.single("file"), postCorpus);
 
-router.delete("/:id",deleteCorpus)
+router.delete("/:id", deleteCorpus);
 
-router.put("/:id",putCorpus)
+router.put("/:id", putCorpus);
 
 export default router;

@@ -1,6 +1,8 @@
 import { Request } from "express";
 import { db } from "../../../database";
+import path from "path";
 import { CorpusTable, NewCorpus } from "../../../models/corpus";
+import { uploadImage } from "../../../helper/helper";
 
 export const getAllCorpus = async (req: Request) => {
 	const result = await db.selectFrom("corpus").selectAll().execute();
@@ -26,22 +28,49 @@ export const getOneCorpus = async (req: Request) => {
 };
 
 export const createCorpus = async (req: Request<any, any, NewCorpus>) => {
-	const { body } = req;
-	const result = await db
-		.insertInto("corpus")
-		.values({
-			uid: body.uid,
-			imageURL: body.imageURL,
-			videoURL: body.videoURL,
-			type: body.type,
-			value: body.value,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		})
-		.returningAll()
-		.executeTakeFirst();
+  try {
+    const { body } = req;
+    const myFile = req.file;
+    
+    console.log(myFile);
 
-	return result;
+    if (!myFile) {
+      throw { message: "No file uploaded", status: 400 };
+    }
+
+    const fileExtension = path.extname(myFile.originalname);
+    console.log('File extension:', fileExtension); // Debugging log
+
+    const fileName = `${body.value}${fileExtension}`;
+
+    const imageUrl = await uploadImage(myFile, fileName, "corpus");
+
+    const result = await db
+      .insertInto("corpus")
+      .values({
+        uid: body.uid,
+        imageURL: imageUrl,
+        videoURL: body.videoURL,
+        type: body.type,
+        value: body.value,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returningAll()
+      .executeTakeFirst();
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    
+    if (error instanceof Error) {
+      throw { message: error.message, status: 500 };
+    } else if (typeof error === 'object' && error !== null && 'message' in error) {
+      throw error;
+    } else {
+      throw { message: "Internal server error", status: 500 };
+    }
+  }
 };
 
 export const deleteOneCorpus = async (req: Request) => {
