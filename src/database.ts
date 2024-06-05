@@ -4,7 +4,7 @@ import { Kysely, PostgresDialect } from "kysely";
 
 const dialect = new PostgresDialect({
 	pool: new Pool({
-		connectionString: "postgres://postgres:postgres@postgres:5432/swara_db",
+		connectionString: "postgres://postgres:postgres@34.128.105.52:5432/swara_db",
 		max: 10,
 	}),
 });

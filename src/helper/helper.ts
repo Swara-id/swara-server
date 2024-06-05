@@ -1,6 +1,6 @@
 const util = require("util");
 import gc from "../config/gcp";
-const bucket = gc.bucket("swara-upload-test");
+const bucket = gc.bucket("swara-app-storage");
 
 const { format } = util;
 
@@ -41,3 +41,16 @@ export const uploadImage = (file: File, name: string, folder: string = ''): Prom
     blobStream.end(buffer);
   });
 };
+
+
+export const deleteFile = (filePath: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+   bucket.file(filePath).delete((err) => {
+      if (err) {
+        reject(`Unable to delete file, something went wrong: ${err.message}`);
+      } else {
+        resolve();
+      }
+    });
+  });
+};                  
