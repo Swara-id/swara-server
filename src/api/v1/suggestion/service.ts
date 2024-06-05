@@ -1,16 +1,17 @@
 import { Request } from "express";
 import { db } from "../../../database";
 import path from "path";
-import { CorpusTable, NewCorpus } from "../../../models/corpus";
 import { deleteFile, uploadImage } from "../../../helper/helper";
 import { v4 as uuid } from "uuid";
+import { NewSuggestion, SuggestionUpdate } from "../../../models/Suggestion";
+import { TRequest } from "../../../types";
 
-export const getAllCorpus = async (req: Request) => {
-	const result = await db.selectFrom("corpus").selectAll().execute();
+export const getAllSuggestion = async (req: Request) => {
+	const result = await db.selectFrom("suggestion").selectAll().execute();
 	return result;
 };
 
-export const getOneCorpus = async (req: Request) => {
+export const getOneSuggestion = async (req: Request) => {
 	const { id } = req.params;
 	const numericId = Number(id);
 	if (isNaN(numericId)) {
@@ -18,17 +19,20 @@ export const getOneCorpus = async (req: Request) => {
 	}
 
 	const result = await db
-		.selectFrom("corpus")
+		.selectFrom("suggestion")
 		.selectAll()
 		.where("id", "=", numericId)
 		.executeTakeFirst();
 	if (!result) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+		throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
 	}
 	return { result, status: 200 };
 };
 
-export const createCorpus = async (req: Request<any, any, NewCorpus>) => {
+//Report
+export const createSuggestion = async (
+	req: TRequest<NewSuggestion>
+) => {
 	try {
 		const { body } = req;
 		const myFile = req.file;
@@ -46,16 +50,19 @@ export const createCorpus = async (req: Request<any, any, NewCorpus>) => {
 
 		const fileName = `${randomUUID}${fileExtension}`;
 
-		const imageUrl = await uploadImage(myFile, fileName, "corpus");
+		const imageUrl = await uploadImage(myFile, fileName, "suggestion");
 
 		const result = await db
-			.insertInto("corpus")
+			.insertInto("suggestion")
 			.values({
 				uid: randomUUID,
-				imageURL: imageUrl,
-				videoURL: body.videoURL,
+				attachmentUrl: imageUrl,
 				type: body.type,
 				value: body.value,
+				verificationStatus: "waiting",
+				userId:body.userId,
+				userLocation:body.userLocation,
+				challengeId:body.challengeId,
 
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -81,7 +88,7 @@ export const createCorpus = async (req: Request<any, any, NewCorpus>) => {
 	}
 };
 
-export const deleteOneCorpus = async (req: Request) => {
+export const deleteOneSuggestion = async (req: Request) => {
 	const { id } = req.params;
 	const numericId = Number(id);
 	if (isNaN(numericId)) {
@@ -89,37 +96,34 @@ export const deleteOneCorpus = async (req: Request) => {
 	}
 
 	const itemFile = await db
-		.selectFrom("corpus")
-		.select(["imageURL"])
+		.selectFrom("suggestion")
+		.select(["attachmentUrl"])
 		.where("id", "=", numericId)
 		.executeTakeFirst();
 
 	if (!itemFile) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+		throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
 	}
 
 	const result = await db
-		.deleteFrom("corpus")
+		.deleteFrom("suggestion")
 		.where("id", "=", numericId)
 		.returningAll()
 		.executeTakeFirst();
 
 	if (!result) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+		throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
 	}
 
-	if (itemFile.imageURL) {
+	if (itemFile.attachmentUrl) {
 		try {
-			const fileName = path.basename(itemFile.imageURL);
+			const fileName = path.basename(itemFile.attachmentUrl);
 			if (fileName) {
-				const filePath = `corpus/${fileName}`;
+				const filePath = `suggestion/${fileName}`;
 				console.log(filePath);
 				await deleteFile(filePath);
 			} else {
-				console.error(
-					"Failed to extract UID from thumbnail URL:",
-					itemFile.imageURL
-				);
+				console.error("Failed:", itemFile.attachmentUrl);
 			}
 		} catch (error) {
 			console.error(`Failed to delete image from storage: ${error}`);
@@ -127,12 +131,14 @@ export const deleteOneCorpus = async (req: Request) => {
 	}
 
 	return {
-		message: `Successfully deleted corpus with ID ${numericId}`,
+		message: `Successfully deleted suggestion with ID ${numericId}`,
 		status: 200,
 	};
 };
 
-export const updateOneCorpus = async (req: Request) => {
+export const updateOneSuggestion = async (
+	req: Request<any, any, SuggestionUpdate>
+) => {
 	const { id } = req.params;
 	const numericId = Number(id);
 	if (isNaN(numericId)) {
@@ -140,23 +146,24 @@ export const updateOneCorpus = async (req: Request) => {
 	}
 	const { body } = req;
 	const result = await db
-		.updateTable("corpus")
+		.updateTable("suggestion")
 		.set({
-			uid: body.uid,
-			imageURL: body.imageURL,
-			videoURL: body.videoURL,
+			attachmentUrl: body.attachmentUrl,
 			type: body.type,
 			value: body.value,
+			verificationStatus: "waiting",
+			challengeId: body.challengeId,
+
 			updatedAt: new Date(),
 		})
 		.where("id", "=", numericId)
 		.returningAll()
 		.executeTakeFirst();
 	if (!result) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+		throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
 	}
 	return {
-		message: `Successfully updated corpus with ID ${numericId}`,
+		message: `Successfully updated suggestion with ID ${numericId}`,
 		status: 200,
 	};
 };

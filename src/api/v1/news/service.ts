@@ -2,7 +2,7 @@ import { Request } from "express";
 import { db } from "../../../database";
 import path from "path";
 import { NewsTable, NewNews } from "../../../models/News";
-import { uploadImage } from "../../../helper/helper";
+import { deleteFile, uploadImage } from "../../../helper/helper";
 import { v4 as uuid } from "uuid";
 
 export const getAllNews = async (req: Request) => {
@@ -89,28 +89,58 @@ export const deleteOneNews = async (req: Request) => {
 	if (isNaN(numericId)) {
 		throw { message: "Invalid ID parameter", status: 400 };
 	}
+
+	const itemFile = await db
+		.selectFrom("news")
+		.select(["thumbnailUrl"])
+		.where("id", "=", numericId)
+		.executeTakeFirst();
+
+	if (!itemFile) {
+		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+	}
+
 	const result = await db
 		.deleteFrom("news")
 		.where("id", "=", numericId)
 		.returningAll()
 		.executeTakeFirst();
+
 	if (!result) {
-		throw { message: `No events found with ID ${numericId}`, status: 404 };
+		throw { message: `No news found with ID ${numericId}`, status: 404 };
 	}
-	return { message: `Success delete events with ID ${numericId}`, status: 200 };
+
+	if (itemFile.thumbnailUrl) {
+		try {
+			const fileName = path.basename(itemFile.thumbnailUrl);
+			if (fileName) {
+				const filePath = `news/${fileName}`;
+				console.log(filePath);
+				await deleteFile(filePath);
+			} else {
+				console.error(
+					"Failed to extract UID from thumbnail URL:",
+					itemFile.thumbnailUrl
+				);
+			}
+		} catch (error) {
+			console.error(`Failed to delete image from storage: ${error}`);
+		}
+	}
+
+	return {
+		message: `Successfully deleted news with ID ${numericId}`,
+		status: 200,
+	};
 };
 
 export const updateOneNews = async (req: Request) => {
-	const { id } = req.params;
-	const numericId = Number(id);
-	if (isNaN(numericId)) {
-		throw { message: "Invalid ID parameter", status: 400 };
-	}
+	const { uid } = req.params;
+
 	const { body } = req;
 	const result = await db
 		.updateTable("news")
 		.set({
-			uid: body.uid,
 			description: body.description,
 			userUid: body.userUid,
 			newsTypeId: body.newsTypeId,
@@ -118,14 +148,15 @@ export const updateOneNews = async (req: Request) => {
 
 			updatedAt: new Date(),
 		})
-		.where("id", "=", numericId)
+		.where("uid", "==", uid)
 		.returningAll()
 		.executeTakeFirst();
 	if (!result) {
-		throw { message: `No events found with ID ${numericId}`, status: 404 };
+		throw { message: `No events found with UID ${uid}`, status: 404 };
 	}
 	return {
-		message: `Successfully updated events with ID ${numericId}`,
+		message: `Successfully updated events with UID ${uid}`,
 		status: 200,
 	};
 };
+
