@@ -1,3 +1,4 @@
+import { CorpusImageTable } from './models/CorpusImage';
 import { SuggestionTable } from "./models/Suggestion";
 import { ChallengeUpdate } from "./models/Challenge";
 import { NewsTable } from "./models/News";
@@ -10,6 +11,7 @@ import { Request } from "express";
 export interface Database {
 	users: UsersTable;
 	corpus: CorpusTable;
+	corpusImage: CorpusImageTable;
 	quiz: QuizTable;
 	news: NewsTable;
 	newsType: NewsTypeTable;
