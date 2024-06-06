@@ -25,21 +25,25 @@ export const indexOneQuiz = async (
     try {
         const result = await getOneQuiz(req);
 		res.status(200).json({ data: result });
-    } catch (error) {
-        next(error)
+    } catch (error: any) {
+        if (error && typeof error === "object" && "status" in error) {
+			const { message, status } = error;
+			res.status(status).json({ status, error: message });
+		} else {
+			res.status(500).json({ status: 500, error: "Unknown error occurred" });
+		}
     }
 };
 
 export const postQuiz = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
+    req: Request,
+    res: Response,
+    next: NextFunction
 ) => {
-	try {
-		const result = await createQuiz(req);
-		res.status(201).json(result);
-	} catch (error) {
-		next(error);
-	}
+    try {
+        const result = await createQuiz(req);
+        res.status(201).json(result.result); // Directly send the result as JSON
+    } catch (error) {
+        next(error);
+    }
 };
-
