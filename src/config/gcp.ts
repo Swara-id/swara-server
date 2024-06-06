@@ -5,7 +5,7 @@ const serviceKey = path.join(__dirname, "./keys.json");
 
 export const storage = new Storage({
   keyFilename: serviceKey,
-  projectId: "swara-dev-425202",
+  projectId: process.env.PROJECT_ID,
 });
 
 export default storage;
