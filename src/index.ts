@@ -4,13 +4,14 @@ import path from "path";
 
 import bodyParser from "body-parser";
 import multer from "multer";
-
+import errorHandler from './middleware/errorHandler';
 import express, { NextFunction, Request, Response } from "express";
 import corpusRouter from "./api/v1/corpus/route";
 import usersRouter from "./api/v1/users/route";
 import quizRouter from "./api/v1/quiz/route";
 import newsRouter from "./api/v1/news/route";
 import eventTypeRouter from "./api/v1/newsType/route";
+
 
 
 const app = express();
@@ -35,6 +36,8 @@ app.use(`/${route}/news`, newsRouter);
 
 app.use(`/${route}/news-type`, eventTypeRouter);
 
+// app.use(errorHandler);
+
 app.listen(port, () => {
-	console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });

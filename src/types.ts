@@ -3,6 +3,7 @@ import { CorpusTable } from "./models/corpus";
 import { UsersTable } from "./models/Users";
 import { QuizTable } from "./models/Quiz";
 import { NewsTypeTable } from "./models/NewsType";
+import { ChoiceTable } from "./models/Choice";
 
 export interface Database {
 	users: UsersTable;
@@ -10,4 +11,5 @@ export interface Database {
 	quiz: QuizTable;
 	news: NewsTable;
 	newsType: NewsTypeTable;
+	choice: ChoiceTable;
 }
