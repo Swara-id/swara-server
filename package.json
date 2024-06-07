@@ -28,7 +28,12 @@
     "dev": "concurrently \"nodemon -r tsconfig-paths/register src/index.ts\" \"npm run swagger\"",
     "build": "tsc",
     "serve": "node dist/index.js",
-    "swagger": "tsoa spec"
+    "swagger": "tsoa spec",
+    "lint": "npx eslint",
+    "lint:fix": "npx eslint --fix",
+    "lint:strict": "npx eslint '*/**/*.{js,ts}'",
+    "format": "prettier --write */**/*.{js,json,ts,md}",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/morgan": "^1.9.9",
@@ -45,17 +50,5 @@
     "lint-staged": "^15.2.5",
     "prettier": "^3.3.1",
     "tsconfig-paths": "^4.2.0"
-  },
-  "husky": {
-    "hooks": {
-    "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write",
-      "git add"
-    ]
   }
 }
