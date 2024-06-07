@@ -6,14 +6,16 @@ import {
 	Updateable,
 } from "kysely";
 import { Suggestion } from "./Suggestion";
+import { Quiz } from "./Quiz";
+import { Users } from "./Users";
 
 export interface PointsTable {
 	id: Generated<number>;
-	name: string;
-	userId: string;
-	source: "quiz" | "learning" | "challenge";
-	quizId: null | "";
-	suggestionId: null | Suggestion["uid"];
+	desc: string;
+	userId: Users["id"];
+	source: "quiz" | "suggestion" | "challenge";
+	quizId: null | Quiz["id"];
+	suggestionId: Suggestion["id"] | null;
 	points: number;
 
 	createdAt: ColumnType<Date>;

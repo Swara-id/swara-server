@@ -1,9 +1,17 @@
+import 'dotenv/config'
+import  "./config/firebase-config";
+
+
 import express, { NextFunction, Request, Response } from "express";
 import corpusRouter from "./api/v1/corpus/route";
 import usersRouter from "./api/v1/users/route";
 import quizRouter from "./api/v1/quiz/route";
 import newsRouter from "./api/v1/news/route";
-import eventTypeRouter from "./api/v1/newsType/route";
+import suggestionRouter from "./api/v1/suggestion/route";
+import eventTypeRouter from "./api/v1/newsType/route"
+import challengeTypeRouter from "./api/v1/Challenge/route"
+import authRouter from "./api/v1/auth/route"
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,7 +35,11 @@ app.use(`/${route}/news`, newsRouter);
 
 app.use(`/${route}/news-type`, eventTypeRouter);
 
-app.use(`/${route}/challenge`, eventTypeRouter);
+app.use(`/${route}/challenge`, challengeTypeRouter);
+
+app.use(`/${route}/suggestion`, suggestionRouter);
+
+app.use(`/${route}/auth`, authRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

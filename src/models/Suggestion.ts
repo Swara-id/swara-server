@@ -1,3 +1,4 @@
+import { Challenge } from "./Challenge";
 import { Users, UsersTable } from "./Users";
 
 import {
@@ -16,8 +17,8 @@ export interface SuggestionTable {
 	value: string;
 	verificationStatus: "approved" | "rejected" | "waiting";
 	attachmentUrl: string;
-	challengeId: null | string;
-	userId: Users["id"] | null;
+	challengeId: null | Challenge["id"];
+	userId: Users["id"];
 	userLocation: string | null;
 
 	createdAt: ColumnType<Date>;

@@ -1,3 +1,5 @@
+import { PointsTable } from './models/Points';
+import { CorpusImageTable } from './models/CorpusImage';
 import { SuggestionTable } from "./models/Suggestion";
 import { ChallengeUpdate } from "./models/Challenge";
 import { NewsTable } from "./models/News";
@@ -15,6 +17,7 @@ export interface Database {
 	newsType: NewsTypeTable;
 	challenge: ChallengeUpdate;
 	suggestion: SuggestionTable;
+	points:PointsTable;
 }
 
 export interface TRequest<T>

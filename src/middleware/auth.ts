@@ -1,22 +1,19 @@
-import { NextFunction, Request, Response } from "express";
-import admin from "../config/firebase-config";
+import  admin  from "../config/firebase-config";
 
-export const decodeToken = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	if (req.headers.authorization) {
-		const token = req.headers.authorization.split(" ")[1];
-		try {
-			const decodeValue = await admin.auth().verifyIdToken(token);
-			if (decodeValue) {
-				console.log(decodeValue);
-				return next();
-			}
-			return res.json({ message: "Unauthorized" });
-		} catch (e) {
-			return res.json({ message: "Internal Error" });
-		}
-	}
+const verifyToken = async (req, res, next) => {
+    const idToken = req.cookies.access_token;
+    if (!idToken) {
+        return res.status(403).json({ error: 'No token provided' });
+    }
+
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken); 
+        req.user = decodedToken;
+        next();
+    } catch (error) {
+        console.error('Error verifying token:', error);
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
 };
+
+export default verifyToken;
