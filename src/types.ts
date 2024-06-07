@@ -12,12 +12,14 @@ import { Request } from "express";
 export interface Database {
 	users: UsersTable;
 	corpus: CorpusTable;
+	corpusImage: CorpusImageTable;
 	quiz: QuizTable;
 	news: NewsTable;
 	newsType: NewsTypeTable;
 	challenge: ChallengeUpdate;
 	suggestion: SuggestionTable;
 	points:PointsTable;
+	
 }
 
 export interface TRequest<T>

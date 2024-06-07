@@ -17,53 +17,86 @@ export const getOneCorpus = async (req: Request) => {
 		throw { message: "Invalid ID parameter", status: 400 };
 	}
 
-	const result = await db
+	const corpusResult = await db
 		.selectFrom("corpus")
 		.selectAll()
 		.where("id", "=", numericId)
 		.executeTakeFirst();
-	if (!result) {
+	if (!corpusResult) {
 		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
 	}
+
+	const images = await db
+		.selectFrom("corpusImage")
+		.selectAll()
+		.where("corpusId", "=", numericId)
+		.executeTakeFirst();
+
+	const result = {
+		corpusResult,
+		images,
+	};
+
 	return { result, status: 200 };
 };
-
 export const createCorpus = async (req: Request<any, any, NewCorpus>) => {
 	try {
 		const { body } = req;
-		const myFile = req.file;
-
-		const randomUUID = uuid();
+		const myFile = req.files as Express.Multer.File[];
 
 		console.log(myFile);
 
-		if (!myFile) {
+		if (!myFile || myFile.length === 0) {
 			throw { message: "No file uploaded", status: 400 };
 		}
 
-		const fileExtension = path.extname(myFile.originalname);
-		console.log("File extension:", fileExtension); // Debugging log
+		const transaction = await db.transaction().execute(async (trx) => {
+			const corpusResult = await trx
+				.insertInto("corpus")
+				.values({
+					type: body.type,
+					value: body.value,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				})
+				.returningAll()
+				.executeTakeFirstOrThrow();
 
-		const fileName = `${randomUUID}${fileExtension}`;
+			const imageUploadPromises = myFile.map(async (element, index) => {
+				const fileExtension = path.extname(element.originalname);
+				console.log("File extension:", fileExtension);
 
-		const imageUrl = await uploadImage(myFile, fileName, "corpus");
+				const fileName = `image-${index.toString()}${fileExtension}`;
+				console.log(fileName);
 
-		const result = await db
-			.insertInto("corpus")
-			.values({
-				uid: randomUUID,
-				imageURL: imageUrl,
-				videoURL: body.videoURL,
-				type: body.type,
-				value: body.value,
+				const imageUrl = await uploadImage(
+					element,
+					fileName,
+					`corpus/${corpusResult.id}`
+				);
 
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			})
-			.returningAll()
-			.executeTakeFirst();
+				const imageResult = await trx
+					.insertInto("corpusImage")
+					.values({
+						corpusId: corpusResult.id,
+						imageUrl: imageUrl,
+						createdAt: new Date(),
+					})
+					.returningAll()
+					.executeTakeFirstOrThrow();
 
-		return result;
+				return imageResult;
+			});
+
+			const corpusImages = await Promise.all(imageUploadPromises);
+
+			return {
+				corpusResult,
+				corpusImages,
+			};
+		});
+
+		return transaction;
 	} catch (error) {
 		console.error(error);
 
@@ -88,75 +121,60 @@ export const deleteOneCorpus = async (req: Request) => {
 		throw { message: "Invalid ID parameter", status: 400 };
 	}
 
-	const itemFile = await db
-		.selectFrom("corpus")
-		.select(["imageURL"])
-		.where("id", "=", numericId)
-		.executeTakeFirst();
+	const images = await db
+		.selectFrom("corpusImage")
+		.select("imageUrl")
+		.where("corpusId", "=", numericId)
+		.execute();
 
-	if (!itemFile) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+	if (!images || images.length === 0) {
+		throw {
+			message: `No images found for corpus with ID ${numericId}`,
+			status: 404,
+		};
 	}
 
-	const result = await db
-		.deleteFrom("corpus")
-		.where("id", "=", numericId)
-		.returningAll()
-		.executeTakeFirst();
+	const transaction = await db.transaction().execute(async (trx) => {
+		await trx.deleteFrom("corpus").where("id", "=", numericId).execute();
 
-	if (!result) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+		return images;
+	});
+
+	const deletePromises = transaction.map((image) => deleteFile(image.imageUrl));
+
+	try {
+		await Promise.all(deletePromises);
+		return {
+			message: `Corpus with ID ${numericId} and associated files deleted successfully`,
+			status: 200,
+		};
+	} catch (err) {
+		console.error(err);
+		throw { message: `Failed to delete some files: ${err}`, status: 500 };
 	}
-
-	if (itemFile.imageURL) {
-		try {
-			const fileName = path.basename(itemFile.imageURL);
-			if (fileName) {
-				const filePath = `corpus/${fileName}`;
-				console.log(filePath);
-				await deleteFile(filePath);
-			} else {
-				console.error(
-					"Failed to extract UID from thumbnail URL:",
-					itemFile.imageURL
-				);
-			}
-		} catch (error) {
-			console.error(`Failed to delete image from storage: ${error}`);
-		}
-	}
-
-	return {
-		message: `Successfully deleted corpus with ID ${numericId}`,
-		status: 200,
-	};
 };
-
-export const updateOneCorpus = async (req: Request) => {
-	const { id } = req.params;
-	const numericId = Number(id);
-	if (isNaN(numericId)) {
-		throw { message: "Invalid ID parameter", status: 400 };
-	}
-	const { body } = req;
-	const result = await db
-		.updateTable("corpus")
-		.set({
-			uid: body.uid,
-			imageURL: body.imageURL,
-			videoURL: body.videoURL,
-			type: body.type,
-			value: body.value,
-			updatedAt: new Date(),
-		})
-		.where("id", "=", numericId)
-		.returningAll()
-		.executeTakeFirst();
-	if (!result) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
-	}
-	return {
-		message: `Successfully updated corpus with ID ${numericId}`,
-		status: 200,
-	};
-};
+// export const updateOneCorpus = async (req: Request) => {
+// 	const { id } = req.params;
+// 	const numericId = Number(id);
+// 	if (isNaN(numericId)) {
+// 		throw { message: "Invalid ID parameter", status: 400 };
+// 	}
+// 	const { body } = req;
+// 	const result = await db
+// 		.updateTable("corpus")
+// 		.set({
+// 			type: body.type,
+// 			value: body.value,
+// 			updatedAt: new Date(),
+// 		})
+// 		.where("id", "=", numericId)
+// 		.returningAll()
+// 		.executeTakeFirst();
+// 	if (!result) {
+// 		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+// 	}
+// 	return {
+// 		message: `Successfully updated corpus with ID ${numericId}`,
+// 		status: 200,
+// 	};
+// };

@@ -3,7 +3,7 @@ import {
 	createCorpus,
 	getOneCorpus,
 	deleteOneCorpus,
-	updateOneCorpus,
+	// updateOneCorpus,
 } from "./service";
 import { NewCorpus } from "../../../models/corpus";
 import { db } from "../../../database";
@@ -48,44 +48,44 @@ export const postCorpus = async (
 ) => {
 	try {
 		const result = await createCorpus(req);
-		res.status(201).json(result);
+		res.status(201).json({data : result});
 	} catch (error) {
 		next(error);
 	}
 };
 
-export const deleteCorpus = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const result = await deleteOneCorpus(req);
-		res.status(result.status).json(result);
-	} catch (error: any) {
-		if (error && typeof error === 'object' && 'status' in error) {
-			const { message, status } = error;
-			res.status(status).json({ status, error: message });
-		} else {
-			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
-		}
-	}
-};
+// export const deleteCorpus = async (
+// 	req: Request,
+// 	res: Response,
+// 	next: NextFunction
+// ) => {
+// 	try {
+// 		const result = await deleteOneCorpus(req);
+// 		res.status(result.status).json(result);
+// 	} catch (error: any) {
+// 		if (error && typeof error === 'object' && 'status' in error) {
+// 			const { message, status } = error;
+// 			res.status(status).json({ status, error: message });
+// 		} else {
+// 			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+// 		}
+// 	}
+// };
 
-export const putCorpus = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const { message, status } = await updateOneCorpus(req);
-		res.status(status).json({ message });
-	} catch (error: any) {
-		if (error && typeof error === 'object' && 'status' in error) {
-			const { message, status } = error;
-			res.status(status).json({ status, error: message });
-		} else {
-			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
-		}
-	}
-};
+// export const putCorpus = async (
+// 	req: Request,
+// 	res: Response,
+// 	next: NextFunction
+// ) => {
+// 	try {
+// 		const { message, status } = await updateOneCorpus(req);
+// 		res.status(status).json({ message });
+// 	} catch (error: any) {
+// 		if (error && typeof error === 'object' && 'status' in error) {
+// 			const { message, status } = error;
+// 			res.status(status).json({ status, error: message });
+// 		} else {
+// 			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+// 		}
+// 	}
+// };
