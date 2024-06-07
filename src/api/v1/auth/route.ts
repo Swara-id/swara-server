@@ -1,6 +1,5 @@
-import { multerMid } from "./../../../middleware/multer";
 import UserController from "./controller";
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 
 const router = Router();
 const controller = new UserController();

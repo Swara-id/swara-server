@@ -14,10 +14,30 @@
       "@config/*": ["./src/config/*"],
       "@helper/*": ["./src/helper/*"],
       "@middleware/*": ["./src/middleware/*"],
-      "@models/*": ["./src/models/*"]
+      "@models/*": ["./src/models/*"],
+      "tsoa": ["./node_modules/tsoa/dist"],
+      "tsoa/*": ["./node_modules/tsoa/dist/*"]
     },
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+
+    /* Strict Type-Checking Options */
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Module Resolution Options */
+    "moduleResolution": "node"
   },
   "include": ["src/*.ts"],
   "exclude": ["node_modules"]
