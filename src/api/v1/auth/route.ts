@@ -1,22 +1,16 @@
 import { multerMid } from "./../../../middleware/multer";
-import {
-  loginUser,
-  logoutUser,
-  registerUser,
-  resetPassword,
-}
- from "./controller";
+import UserController from "./controller";
 import { Router, Request, Response } from "express";
 
 const router = Router();
+const controller = new UserController();
 
-router.post("/register", registerUser);
+router.post("/register", controller.registerUser);
 
-router.post("/login", loginUser);
+router.post("/login", controller.loginUser);
 
-router.post("/logout", logoutUser);
+router.post("/logout", controller.logoutUser);
 
-router.post("/reset-password", resetPassword);
-
+router.post("/reset-password", controller.resetPassword);
 
 export default router;

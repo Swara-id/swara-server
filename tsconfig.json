@@ -15,7 +15,9 @@
       "@helper/*": ["./src/helper/*"],
       "@middleware/*": ["./src/middleware/*"],
       "@models/*": ["./src/models/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/*.ts"],
   "exclude": ["node_modules"]

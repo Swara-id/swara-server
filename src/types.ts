@@ -22,7 +22,7 @@ export interface Database {
 	
 }
 
-export interface TRequest<T>
+export interface TRequest<T = any>
 	extends Request {
 	body: T;
 }
