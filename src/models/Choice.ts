@@ -3,14 +3,18 @@ import {
     Selectable,
     Insertable,
     Updateable,
+    ColumnType,
 } from "kysely";
 
 export interface ChoiceTable {
     id: Generated<number>;
-    quizId: number;  // Foreign key to the Quiz table
     value: string;
-    picture: string;
+    quizId: number;  // Foreign key to the Quiz table
+    imageUrl: string;
     isCorrect: boolean;
+
+    createdAt: ColumnType<Date>,
+    updatedAt: ColumnType<Date>,
 }
 
 export type Choice = Selectable<ChoiceTable>;

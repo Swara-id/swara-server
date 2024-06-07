@@ -4,5 +4,10 @@
   "spec": {
     "outputDirectory": "public",
     "specVersion": 3
-  }
+  },
+  "routes": {
+        "controllerPathGlobs": [
+            "./src/api/v1/**/*.ts"
+        ]
+    }
 }

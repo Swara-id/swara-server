@@ -8,12 +8,14 @@ import { UsersTable } from "./models/Users";
 import { QuizTable } from "./models/Quiz";
 import { NewsTypeTable } from "./models/NewsType";
 import { Request } from "express";
+import { ChoiceTable } from './models/Choice';
 
 export interface Database {
 	users: UsersTable;
 	corpus: CorpusTable;
 	corpusImage: CorpusImageTable;
 	quiz: QuizTable;
+	choice:ChoiceTable
 	news: NewsTable;
 	newsType: NewsTypeTable;
 	challenge: ChallengeUpdate;

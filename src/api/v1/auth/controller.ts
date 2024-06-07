@@ -16,7 +16,6 @@ const auth = getAuth();
 export default class UserController extends Controller {
   @Post("register")
   public async registerUser(
-    @Body()
     req: TRequest<{
       email: string;
       password: string;

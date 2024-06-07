@@ -5,12 +5,12 @@ import {
     Insertable,
     Updateable,
 } from "kysely";
-import { NewChoice } from "./Choice"; // Import NewChoice type
 
 export interface QuizTable {
-    id?: number;
-    uid: string;
+	id: Generated<number>;
     question: string;
+    
+
     createdAt: Date;
     updatedAt: Date;
 }

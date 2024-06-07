@@ -22,13 +22,11 @@
     "uuidv4": "^6.2.13"
   },
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register --respawn --transpile-only src/index.ts",
-    "predev": "npm run swagger",
-    "prebuild": "npm run swagger",
-    "dev": "concurrently \"nodemon -r tsconfig-paths/register --respawn --transpile-only src/index.ts\" \"npm run swagger\"",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "dev": "concurrently \"nodemon -r tsconfig-paths/register src/index.ts\"",
     "build": "tsc",
     "serve": "node dist/index.js",
-    "swagger": "tsoa specc"
+    "swagger": "tsoa spec"
   },
   "devDependencies": {
     "@types/morgan": "^1.9.9",
