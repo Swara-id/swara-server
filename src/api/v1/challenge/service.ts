@@ -38,6 +38,7 @@ export const createChallenge = async (req: Request<any, any, NewChallenge>) => {
 				type: body.type,
 				value: body.value,
 				status: "ongoing",
+				point: body.point,
 
 				updatedAt: new Date(),
 				createdAt: new Date(),
@@ -97,6 +98,7 @@ export const updateOneChallenge = async (req: Request) => {
 			type: body.type,
 			value: body.value,
 			status: body.status,
+			point: body.point,
 
 			updatedAt: new Date(),
 		})

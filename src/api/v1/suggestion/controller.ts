@@ -4,6 +4,7 @@ import {
 	getOneSuggestion,
 	deleteOneSuggestion,
 	updateOneSuggestion,
+	verificateOneSuggestion,
 } from "./service";
 import { NewCorpus } from "../../../models/corpus";
 import { db } from "../../../database";
@@ -79,6 +80,23 @@ export const putSuggestion = async (
 ) => {
 	try {
 		const { message, status } = await updateOneSuggestion(req);
+		res.status(status).json({ message });
+	} catch (error: any) {
+		if (error && typeof error === 'object' && 'status' in error) {
+			const { message, status } = error;
+			res.status(status).json({ status, error: message });
+		} else {
+			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+		}
+	}
+};
+export const patchSuggestion = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { message, status } = await verificateOneSuggestion(req);
 		res.status(status).json({ message });
 	} catch (error: any) {
 		if (error && typeof error === 'object' && 'status' in error) {

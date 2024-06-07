@@ -14,7 +14,7 @@ export interface UsersTable {
 	userName: string;
 	gender: "male" | "female";
 	about: string;
-	profilePicURL: string;
+	profilePicURL: string | null;
 
 	createdAt: ColumnType<Date>;
 	updatedAt: ColumnType<Date>;

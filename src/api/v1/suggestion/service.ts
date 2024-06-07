@@ -1,3 +1,4 @@
+import { PointsUpdate } from './../../../models/Points';
 import { Request } from "express";
 import { db } from "../../../database";
 import path from "path";
@@ -29,10 +30,7 @@ export const getOneSuggestion = async (req: Request) => {
 	return { result, status: 200 };
 };
 
-//Report
-export const createSuggestion = async (
-	req: TRequest<NewSuggestion>
-) => {
+export const createSuggestion = async (req: TRequest<NewSuggestion>) => {
 	try {
 		const { body } = req;
 		const myFile = req.file;
@@ -60,9 +58,9 @@ export const createSuggestion = async (
 				type: body.type,
 				value: body.value,
 				verificationStatus: "waiting",
-				userId:body.userId,
-				userLocation:body.userLocation,
-				challengeId:body.challengeId,
+				userId: body.userId,
+				userLocation: body.userLocation,
+				challengeId: body.challengeId,
 
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -164,6 +162,64 @@ export const updateOneSuggestion = async (
 	}
 	return {
 		message: `Successfully updated suggestion with ID ${numericId}`,
+		status: 200,
+	};
+};
+export const verificateOneSuggestion = async (
+	req: Request<any, any, {point:number}>
+) => {
+	const { id } = req.params;
+	const numericId = Number(id);
+	if (isNaN(numericId)) {
+		throw { message: "Invalid ID parameter", status: 400 };
+	}
+	const { body } = req;
+
+		const transaction = await db.transaction().execute(async (trx) => {
+			const suggestionResult = await trx
+				.updateTable("suggestion")
+				.set({
+					verificationStatus: "approved",
+					updatedAt: new Date(),
+				})
+				.where("id", "=", numericId)
+				.returningAll()
+				.executeTakeFirstOrThrow();
+			if (!suggestionResult) {
+				throw {
+					message: `No suggestion found with ID ${numericId}`,
+					status: 404,
+				};
+			}
+
+			const pointResult = await trx.insertInto("points")
+			.values({
+				desc: "Suggestion approved",
+				userId: suggestionResult.userId,
+				source: "suggestion",
+				suggestionId: suggestionResult.id,
+				points: body.point,
+
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			})
+			.returningAll()
+			.executeTakeFirst();
+			if (!pointResult) {
+				throw {
+					message: `Failed to create points for suggestion with ID ${numericId}`,
+					status: 500,
+				};
+			}
+
+			return {
+				verifyStatus:"Suggestion Approved",
+				pointResult,
+			};
+		});
+
+	return {
+		message: `Successfully verify suggestion with ID ${numericId}`,
 		status: 200,
 	};
 };

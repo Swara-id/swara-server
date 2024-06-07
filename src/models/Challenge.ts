@@ -14,6 +14,7 @@ export interface ChallengeTable {
 	uid: string;
 	type: "word" | "letter";
 	value: string;
+	point: number;
 	status: "ongoing" | "completed";
 
 	createdAt: ColumnType<Date>;

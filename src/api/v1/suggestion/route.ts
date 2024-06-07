@@ -5,6 +5,7 @@ import {
 	indexOneSuggestion,
 	deleteSuggestion,
 	putSuggestion,
+	patchSuggestion,
 } from "./controller";
 import { Router, Request, Response } from "express";
 
@@ -19,5 +20,7 @@ router.post("/", multerMid.single("file"), postSuggestion);
 router.delete("/:id", deleteSuggestion);
 
 router.put("/:id", putSuggestion);
+
+router.patch("/:id/verificate", patchSuggestion);
 
 export default router;
