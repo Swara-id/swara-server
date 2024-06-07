@@ -23,7 +23,9 @@
   },
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register src/index.ts",
-    "dev": "concurrently \"nodemon -r tsconfig-paths/register src/index.ts\"",
+    "predev": "npm run swagger",
+    "prebuild": "npm run swagger",
+    "dev": "concurrently \"nodemon -r tsconfig-paths/register src/index.ts\" \"npm run swagger\"",
     "build": "tsc",
     "serve": "node dist/index.js",
     "swagger": "tsoa spec"

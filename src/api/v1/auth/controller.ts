@@ -1,5 +1,5 @@
 import { TRequest } from "@/types";
-import { Request, Response } from "express";
+import { Response } from "express";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -8,35 +8,40 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { Body, Controller, Post, Route } from "tsoa";
+import { Controller, Post, Request, Route, SuccessResponse } from "tsoa";
 
 const auth = getAuth();
 
 @Route("auth")
 export default class UserController extends Controller {
+  @SuccessResponse("201", "Created")
   @Post("register")
   public async registerUser(
+    @Request()
     req: TRequest<{
       email: string;
       password: string;
     }>,
-    res: Response
+    @Request() res: Response
   ) {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(422).json({
+      res.status(422).json({
         email: "Email is required",
         password: "Password is required",
       });
+      return;
     }
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
 
-      if (!user)
-        return res.status(500).json({ error: "User is not authenticated" });
+      if (!user) {
+        res.status(500).json({ error: "User is not authenticated" });
+        return;
+      }
 
       sendEmailVerification(user)
         .then(() => {
@@ -44,7 +49,7 @@ export default class UserController extends Controller {
             message: "Verification email sent! User created successfully!",
           });
         })
-        .catch((error) => {
+        .catch((_error) => {
           res.status(500).json({ error: "Error sending email verification" });
         });
     } catch (error) {
@@ -57,13 +62,17 @@ export default class UserController extends Controller {
   }
 
   @Post("login")
-  public async loginUser(req: Request, res: Response) {
+  public async loginUser(
+    @Request() req: TRequest<{ email: string; password: string }>,
+    @Request() res: Response
+  ) {
     const { email, password } = req.body;
+
     if (!email || !password) {
-      return res.status(422).json({
-        email: "Email is required",
-        password: "Password is required",
+      res.status(422).json({
+        message: "Email and password are required",
       });
+      return;
     }
 
     try {
@@ -81,7 +90,7 @@ export default class UserController extends Controller {
   }
 
   @Post("logout")
-  public async logoutUser(req: Request, res: Response) {
+  public async logoutUser(@Request() _req: TRequest, @Request() res: Response) {
     signOut(auth)
       .then(() => {
         res.clearCookie("access_token");
@@ -94,12 +103,17 @@ export default class UserController extends Controller {
   }
 
   @Post("reset-password")
-  public async resetPassword(req: TRequest<{ email: string }>, res: Response) {
+  public async resetPassword(
+    @Request() req: TRequest<{ email: string }>,
+    @Request() res: Response
+  ) {
     const { email } = req.body;
+
     if (!email) {
-      return res.status(422).json({
+      res.status(422).json({
         email: "Email is required",
       });
+      return;
     }
 
     sendPasswordResetEmail(auth, email)
