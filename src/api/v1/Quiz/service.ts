@@ -10,6 +10,7 @@ export const getAllQuiz = async (req: Request) => {
 	return result;
 };
 
+// Function to get one quiz by ID with its choices
 export const getOneQuiz = async (req: Request) => {
 	const { id } = req.params;
 	const numericId = Number(id);
