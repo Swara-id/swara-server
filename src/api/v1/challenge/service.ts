@@ -1,10 +1,8 @@
 import { Request } from "express";
 import { db } from "../../../database";
-import path from "path";
-import { ChallengeTable, NewChallenge } from "../../../models/Challenge";
-import { uploadImage } from "../../../helper/helper";
+import { NewChallenge } from "../../../models/Challenge";
 
-export const getAllChallenge = async (req: Request) => {
+export const getAllChallenge = async (_req: Request) => {
 	const result = await db.selectFrom("challenge").selectAll().execute();
 	return result;
 };

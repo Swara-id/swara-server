@@ -1,4 +1,3 @@
-import { PointsUpdate } from './../../../models/Points';
 import { Request } from "express";
 import { db } from "../../../database";
 import path from "path";
@@ -7,7 +6,7 @@ import { v4 as uuid } from "uuid";
 import { NewSuggestion, SuggestionUpdate } from "../../../models/Suggestion";
 import { TRequest } from "../../../types";
 
-export const getAllSuggestion = async (req: Request) => {
+export const getAllSuggestion = async (_req: Request) => {
 	const result = await db.selectFrom("suggestion").selectAll().execute();
 	return result;
 };
@@ -166,7 +165,7 @@ export const updateOneSuggestion = async (
 	};
 };
 export const verificateOneSuggestion = async (
-	req: Request<any, any, {point:number}>
+	req: Request<any, any, { point: number }>
 ) => {
 	const { id } = req.params;
 	const numericId = Number(id);
@@ -175,24 +174,25 @@ export const verificateOneSuggestion = async (
 	}
 	const { body } = req;
 
-		const transaction = await db.transaction().execute(async (trx) => {
-			const suggestionResult = await trx
-				.updateTable("suggestion")
-				.set({
-					verificationStatus: "approved",
-					updatedAt: new Date(),
-				})
-				.where("id", "=", numericId)
-				.returningAll()
-				.executeTakeFirstOrThrow();
-			if (!suggestionResult) {
-				throw {
-					message: `No suggestion found with ID ${numericId}`,
-					status: 404,
-				};
-			}
+	await db.transaction().execute(async (trx) => {
+		const suggestionResult = await trx
+			.updateTable("suggestion")
+			.set({
+				verificationStatus: "approved",
+				updatedAt: new Date(),
+			})
+			.where("id", "=", numericId)
+			.returningAll()
+			.executeTakeFirstOrThrow();
+		if (!suggestionResult) {
+			throw {
+				message: `No suggestion found with ID ${numericId}`,
+				status: 404,
+			};
+		}
 
-			const pointResult = await trx.insertInto("points")
+		const pointResult = await trx
+			.insertInto("points")
 			.values({
 				desc: "Suggestion approved",
 				userId: suggestionResult.userId,
@@ -205,18 +205,18 @@ export const verificateOneSuggestion = async (
 			})
 			.returningAll()
 			.executeTakeFirst();
-			if (!pointResult) {
-				throw {
-					message: `Failed to create points for suggestion with ID ${numericId}`,
-					status: 500,
-				};
-			}
-
-			return {
-				verifyStatus:"Suggestion Approved",
-				pointResult,
+		if (!pointResult) {
+			throw {
+				message: `Failed to create points for suggestion with ID ${numericId}`,
+				status: 500,
 			};
-		});
+		}
+
+		return {
+			verifyStatus: "Suggestion Approved",
+			pointResult,
+		};
+	});
 
 	return {
 		message: `Successfully verify suggestion with ID ${numericId}`,

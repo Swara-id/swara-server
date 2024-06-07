@@ -6,8 +6,6 @@ import {
 	updateOneSuggestion,
 	verificateOneSuggestion,
 } from "./service";
-import { NewCorpus } from "../../../models/corpus";
-import { db } from "../../../database";
 import { NextFunction, Request, Response } from "express";
 
 export const indexAllSuggestion = async (
@@ -24,11 +22,7 @@ export const indexAllSuggestion = async (
 	}
 };
 
-export const indexOneSuggestion = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const indexOneSuggestion = async (req: Request, res: Response) => {
 	try {
 		const { result, status } = await getOneSuggestion(req);
 		res.status(status).json({ data: result });
@@ -55,55 +49,43 @@ export const postSuggestion = async (
 	}
 };
 
-export const deleteSuggestion = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const deleteSuggestion = async (req: Request, res: Response) => {
 	try {
 		const result = await deleteOneSuggestion(req);
 		res.status(result.status).json(result);
 	} catch (error: any) {
-		if (error && typeof error === 'object' && 'status' in error) {
+		if (error && typeof error === "object" && "status" in error) {
 			const { message, status } = error;
 			res.status(status).json({ status, error: message });
 		} else {
-			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+			res.status(500).json({ status: 500, error: "Unknown error occurred" });
 		}
 	}
 };
 
-export const putSuggestion = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const putSuggestion = async (req: Request, res: Response) => {
 	try {
 		const { message, status } = await updateOneSuggestion(req);
 		res.status(status).json({ message });
 	} catch (error: any) {
-		if (error && typeof error === 'object' && 'status' in error) {
+		if (error && typeof error === "object" && "status" in error) {
 			const { message, status } = error;
 			res.status(status).json({ status, error: message });
 		} else {
-			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+			res.status(500).json({ status: 500, error: "Unknown error occurred" });
 		}
 	}
 };
-export const patchSuggestion = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const patchSuggestion = async (req: Request, res: Response) => {
 	try {
 		const { message, status } = await verificateOneSuggestion(req);
 		res.status(status).json({ message });
 	} catch (error: any) {
-		if (error && typeof error === 'object' && 'status' in error) {
+		if (error && typeof error === "object" && "status" in error) {
 			const { message, status } = error;
 			res.status(status).json({ status, error: message });
 		} else {
-			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
+			res.status(500).json({ status: 500, error: "Unknown error occurred" });
 		}
 	}
 };

@@ -1,6 +1,9 @@
 const util = require("util");
-import gc from "../config/gcp";
-const bucket = gc.bucket("swara-app-storage");
+import storage from "../config/gcp";
+
+const bucket = storage.bucket(process.env.BUCKET_NAME || "");
+
+
 
 const { format } = util;
 
@@ -43,9 +46,10 @@ export const uploadImage = (file: File, name: string, folder: string = ''): Prom
 };
 
 
+
 export const deleteFile = (filePath: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-   bucket.file(filePath).delete((err) => {
+   bucket.file(filePath.split(`${bucket}/`)[1]).delete((err) => {
       if (err) {
         reject(`Unable to delete file, something went wrong: ${err.message}`);
       } else {

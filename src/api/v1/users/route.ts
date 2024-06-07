@@ -1,5 +1,5 @@
 import { deleteUser, indexAllUser, indexOneUser, postUser, putUser } from "./controller";
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 
 const router = Router();
 

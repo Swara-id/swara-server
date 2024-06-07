@@ -1,11 +1,11 @@
 import { Request } from "express";
 import { db } from "../../../database";
 import path from "path";
-import { NewsTable, NewNews } from "../../../models/News";
+import { NewNews } from "../../../models/News";
 import { deleteFile, uploadImage } from "../../../helper/helper";
 import { v4 as uuid } from "uuid";
 
-export const getAllNews = async (req: Request) => {
+export const getAllNews = async (_req: Request) => {
 	const result = await db.selectFrom("news").selectAll().execute();
 	return result;
 };

@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { db } from "../../../database";
 
-export const getAllUser = async (req: Request) => {
+export const getAllUser = async (_req: Request) => {
 	const result = await db.selectFrom("users").selectAll().execute();
 	return result;
 };

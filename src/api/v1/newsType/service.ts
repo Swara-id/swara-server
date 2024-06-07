@@ -1,9 +1,7 @@
 import { Request } from "express";
 import { db } from "../../../database";
-import { NewsTypeTable, NewNewsType } from "../../../models/NewsType";
-import { v4 as uuidv4 } from "uuid";
 
-export const getAllNewsType = async (req: Request) => {
+export const getAllNewsType = async (_req: Request) => {
 	const result = await db.selectFrom("newsType").selectAll().execute();
 	return result;
 };

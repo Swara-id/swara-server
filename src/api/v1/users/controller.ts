@@ -1,6 +1,6 @@
 import {
 	createUser,
-	deleteOneUser,
+	// deleteOneUser,
 	getAllUser,
 	getOneUser,
 	updateOneUser,
@@ -24,7 +24,6 @@ export const indexAllUser = async (
 export const indexOneUser = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
 ) => {
 	try {
 		const { result, status } = await getOneUser(req);
@@ -55,7 +54,6 @@ export const postUser = async (
 export const deleteUser = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
 ) => {
 	try {
 		const { result, status } = await getOneUser(req);

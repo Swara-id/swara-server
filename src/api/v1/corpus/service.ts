@@ -1,47 +1,73 @@
+import { CorpusBody, CorpusGet, CorpusResult } from './types';
 import { Request } from "express";
 import { db } from "../../../database";
 import path from "path";
-import { CorpusTable, NewCorpus } from "../../../models/corpus";
 import { deleteFile, uploadImage } from "../../../helper/helper";
-import { v4 as uuid } from "uuid";
+import { TRequest } from '../../../types';
 
-export const getAllCorpus = async (req: Request) => {
+export const getAllCorpus = async (_req: Request) => {
 	const result = await db.selectFrom("corpus").selectAll().execute();
 	return result;
 };
 
+
 export const getOneCorpus = async (req: Request) => {
-	const { id } = req.params;
-	const numericId = Number(id);
-	if (isNaN(numericId)) {
-		throw { message: "Invalid ID parameter", status: 400 };
-	}
+  const { id } = req.params;
+  const numericId = Number(id);
 
-	const corpusResult = await db
-		.selectFrom("corpus")
-		.selectAll()
-		.where("id", "=", numericId)
-		.executeTakeFirst();
-	if (!corpusResult) {
-		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
-	}
+  if (isNaN(numericId)) {
+    throw { message: "Invalid ID parameter", status: 400 };
+  }
 
-	const images = await db
-		.selectFrom("corpusImage")
-		.selectAll()
-		.where("corpusId", "=", numericId)
-		.executeTakeFirst();
+  try {
+    const result = await db
+      .selectFrom("corpusImage")
+      .innerJoin("corpus", "corpusImage.corpusId", "corpus.id")
+      .select([
+        "corpus.id",
+        "corpus.value",
+        "corpus.type",
+        "corpus.createdAt as corpusCreatedAt",
+        "corpus.updatedAt as corpusUpdatedAt",
+        "corpusImage.imageUrl",
+        "corpusImage.createdAt as imageCreatedAt"
+      ])
+      .where("corpus.id", "=", numericId)
+      .execute();
 
-	const result = {
-		corpusResult,
-		images,
-	};
+    if (result.length === 0) {
+      throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+    }
 
-	return { result, status: 200 };
+    const formattedResult = result.reduce<CorpusGet>((acc, curr, index) => {
+      if (index === 0) {
+        acc.corpusResult = {
+          id: curr.id,
+          value: curr.value,
+          type: curr.type,
+          createdAt: curr.corpusCreatedAt,
+          updatedAt: curr.corpusUpdatedAt,
+        };
+      }
+      acc.images.push({
+        imageUrl: curr.imageUrl,
+        corpusId: curr.id,
+        createdAt: curr.imageCreatedAt,
+      });
+      return acc;
+    }, { corpusResult: null as unknown as CorpusResult, images: [] });
+
+    return { result: formattedResult, status: 200 };
+  } catch (error) {
+    console.error(error);
+    throw { message: "An error occurred while fetching the corpus", status: 500 };
+  }
 };
-export const createCorpus = async (req: Request<any, any, NewCorpus>) => {
+
+export const createCorpus = async (req: TRequest<CorpusBody>) => {
 	try {
 		const { body } = req;
+		console.log(body);
 		const myFile = req.files as Express.Multer.File[];
 
 		console.log(myFile);
@@ -112,7 +138,10 @@ export const createCorpus = async (req: Request<any, any, NewCorpus>) => {
 			throw { message: "Internal server error", status: 500 };
 		}
 	}
+
+
 };
+
 
 export const deleteOneCorpus = async (req: Request) => {
 	const { id } = req.params;
@@ -153,6 +182,7 @@ export const deleteOneCorpus = async (req: Request) => {
 		throw { message: `Failed to delete some files: ${err}`, status: 500 };
 	}
 };
+
 // export const updateOneCorpus = async (req: Request) => {
 // 	const { id } = req.params;
 // 	const numericId = Number(id);

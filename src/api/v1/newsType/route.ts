@@ -1,4 +1,3 @@
-import { multerMid } from "../../../middleware/multer";
 import {
 	indexAllNewsType,
 	postNewsType,
@@ -6,7 +5,7 @@ import {
 	deleteNewsType,
 	putNewsType,
 } from "./controller";
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 
 const router = Router();
 
