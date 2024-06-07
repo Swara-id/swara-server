@@ -3,6 +3,7 @@ import {
     Selectable,
     Insertable,
     Updateable,
+    ColumnType,
 } from "kysely";
 
 export interface ChoiceTable {
@@ -11,6 +12,9 @@ export interface ChoiceTable {
     value: string;
     imageUrl: string;
     isCorrect: boolean;
+    updatedAt:ColumnType<Date>
+    createdAt:ColumnType<Date>
+
 }
 
 export type Choice = Selectable<ChoiceTable>;

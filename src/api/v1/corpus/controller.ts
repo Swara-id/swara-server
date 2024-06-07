@@ -5,8 +5,6 @@ import {
 	deleteOneCorpus,
 	// updateOneCorpus,
 } from "./service";
-import { NewCorpus } from "../../../models/corpus";
-import { db } from "../../../database";
 import { NextFunction, Request, Response } from "express";
 
 export const indexAllCorpus = async (
@@ -26,7 +24,6 @@ export const indexAllCorpus = async (
 export const indexOneCorpus = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
 ) => {
 	try {
 		const { result, status } = await getOneCorpus(req);
@@ -57,7 +54,6 @@ export const postCorpus = async (
 export const deleteCorpus = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
 ) => {
 	try {
 		const result = await deleteOneCorpus(req);

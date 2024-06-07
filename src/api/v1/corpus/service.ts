@@ -2,12 +2,10 @@ import { CorpusBody, CorpusGet, CorpusResult } from './types';
 import { Request } from "express";
 import { db } from "../../../database";
 import path from "path";
-import { CorpusTable, NewCorpus } from "../../../models/corpus";
 import { deleteFile, uploadImage } from "../../../helper/helper";
-import { v4 as uuid } from "uuid";
 import { TRequest } from '../../../types';
 
-export const getAllCorpus = async (req: Request) => {
+export const getAllCorpus = async (_req: Request) => {
 	const result = await db.selectFrom("corpus").selectAll().execute();
 	return result;
 };

@@ -5,7 +5,7 @@ import { uploadImage } from "../../../helper/helper";
 import { TRequest } from "../../../types";
 import { QuizBody } from "./types";
 
-export const getAllQuiz = async (req: Request) => {
+export const getAllQuiz = async (_req: Request) => {
 	const result = await db.selectFrom("quiz").selectAll().execute();
 	return result;
 };

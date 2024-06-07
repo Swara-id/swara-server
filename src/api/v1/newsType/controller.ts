@@ -5,8 +5,6 @@ import {
 	deleteOneNewsType,
 	updateOneNewsType,
 } from "./service";
-import { NewNews } from "../../../models/News";
-import { db } from "../../../database";
 import { NextFunction, Request, Response } from "express";
 
 export const indexAllNewsType = async (
@@ -26,7 +24,6 @@ export const indexAllNewsType = async (
 export const indexOneNewsType = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
 ) => {
 	try {
 		const { result, status } = await getOneNewsType(req);
@@ -57,7 +54,6 @@ export const postNewsType = async (
 export const deleteNewsType = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
 ) => {
 	try {
 		const result = await deleteOneNewsType(req);
@@ -75,7 +71,6 @@ export const deleteNewsType = async (
 export const putNewsType = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
 ) => {
 	try {
 		const { message, status } = await updateOneNewsType(req);

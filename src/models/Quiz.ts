@@ -1,6 +1,5 @@
 import {
     Generated,
-    ColumnType,
     Selectable,
     Insertable,
     Updateable,
@@ -9,7 +8,6 @@ import {
 export interface QuizTable {
 	id: Generated<number>;
     question: string;
-    
 
     createdAt: Date;
     updatedAt: Date;

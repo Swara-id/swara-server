@@ -1,7 +1,4 @@
 const util = require("util");
-import gcp from "../config/gcp";
-
-const { Storage } = require('@google-cloud/storage');
 import storage from "../config/gcp";
 
 const bucket = storage.bucket(process.env.BUCKET_NAME || "");

@@ -6,7 +6,7 @@ import {
 	deleteCorpus,
 	// putCorpus,
 } from "./controller";
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 
 const router = Router();
 

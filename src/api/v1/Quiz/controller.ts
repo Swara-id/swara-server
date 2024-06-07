@@ -1,6 +1,4 @@
 import { getAllQuiz, createQuiz, getOneQuiz } from "./service";
-import { NewQuiz } from "../../../models/Quiz";
-import { db } from "../../../database";
 import { NextFunction, Request, Response } from "express";
 
 export const indexAllQuiz = async (
@@ -18,9 +16,7 @@ export const indexAllQuiz = async (
 
     export const indexOneQuiz = async (
         req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
+        res: Response,    ) => {
         try {
             const result = await getOneQuiz(req);
             res.status(200).json({ data: result });
@@ -37,9 +33,7 @@ export const indexAllQuiz = async (
 
     export const postQuiz = async (
         req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
+        res: Response,    ) => {
         try {
             const result = await createQuiz (req);
             res.status(200).json({ data: result });
