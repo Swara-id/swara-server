@@ -6,8 +6,17 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@api/*": ["./src/api/v1/*"],
+      "@config/*": ["./src/config/*"],
+      "@helper/*": ["./src/helper/*"],
+      "@middleware/*": ["./src/middleware/*"],
+      "@models/*": ["./src/models/*"]
+    }
   },
   "include": ["src/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }
