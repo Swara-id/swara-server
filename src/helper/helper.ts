@@ -1,9 +1,8 @@
-const util = require("util");
+import util from "util";
 import storage from "../config/gcp";
 
+const bucketName = process.env.BUCKET_NAME;
 const bucket = storage.bucket(process.env.BUCKET_NAME || "");
-
-
 
 const { format } = util;
 
@@ -17,14 +16,17 @@ const { format } = util;
  */
 
 interface File {
-	buffer: Buffer;
+  buffer: Buffer;
 }
 
-export const uploadImage = (file: File, name: string, folder: string = ''): Promise<string> => {
+export const uploadImage = (
+  file: File,
+  name: string,
+  folder: string = "",
+): Promise<string> => {
   return new Promise((resolve, reject) => {
     const { buffer } = file;
 
-    // Create a full path with the folder and file name
     const filePath = folder ? `${folder}/${name}` : name;
 
     const blob = bucket.file(filePath);
@@ -32,12 +34,14 @@ export const uploadImage = (file: File, name: string, folder: string = ''): Prom
       resumable: false,
     });
 
-    blobStream.on('finish', () => {
-      const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
+    blobStream.on("finish", () => {
+      const publicUrl = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`,
+      );
       resolve(publicUrl);
     });
 
-    blobStream.on('error', (err) => {
+    blobStream.on("error", (err) => {
       reject(`Unable to upload file, something went wrong: ${err.message}`);
     });
 
@@ -45,11 +49,12 @@ export const uploadImage = (file: File, name: string, folder: string = ''): Prom
   });
 };
 
-
-
 export const deleteFile = (filePath: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-   bucket.file(filePath.split(`${bucket}/`)[1]).delete((err) => {
+    console.log("Filepath : " + filePath);
+    const fileName = filePath.split(`${bucketName}/`)[1];
+    console.log(fileName);
+    bucket.file(fileName).delete((err) => {
       if (err) {
         reject(`Unable to delete file, something went wrong: ${err.message}`);
       } else {
@@ -57,4 +62,4 @@ export const deleteFile = (filePath: string): Promise<void> => {
       }
     });
   });
-};                  
+};

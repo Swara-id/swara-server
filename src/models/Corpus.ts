@@ -1,17 +1,17 @@
 import {
-	Generated,
-	ColumnType,
-	Selectable,
-	Insertable,
-	Updateable,
+  Generated,
+  ColumnType,
+  Selectable,
+  Insertable,
+  Updateable,
 } from "kysely";
 
 export interface CorpusTable {
-	id: Generated<number>;
-	type: "word" | "letter";
-	value: string;
-	createdAt: ColumnType<Date>;
-	updatedAt: ColumnType<Date>;
+  id: Generated<number>;
+  type: "word" | "letter";
+  value: string;
+  createdAt: ColumnType<Date>;
+  updatedAt: ColumnType<Date>;
 }
 
 export type Corpus = Selectable<CorpusTable>;

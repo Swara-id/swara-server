@@ -1,18 +1,12 @@
-import {
-    Generated,
-    Selectable,
-    Insertable,
-    Updateable,
-} from "kysely";
+import { Generated, Selectable, Insertable, Updateable } from "kysely";
 
 export interface QuizTable {
-	id: Generated<number>;
-    question: string;
+  id: Generated<number>;
+  question: string;
 
-    createdAt: Date;
-    updatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
-
 
 export type Quiz = Selectable<QuizTable>;
 export type NewQuiz = Insertable<QuizTable>;

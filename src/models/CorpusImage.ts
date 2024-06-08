@@ -1,17 +1,16 @@
 import {
-	Generated,
-	ColumnType,
-	Selectable,
-	Insertable,
-	Updateable,
+  ColumnType,
+  Selectable,
+  Insertable,
+  Updateable,
 } from "kysely";
 import { Corpus } from "./corpus";
 
 export interface CorpusImageTable {
-	imageUrl:string;
-	corpusId:Corpus["id"]
+  imageUrl: string;
+  corpusId: Corpus["id"];
 
-	createdAt: ColumnType<Date>;
+  createdAt: ColumnType<Date>;
 }
 
 export type CorpusImage = Selectable<CorpusImageTable>;

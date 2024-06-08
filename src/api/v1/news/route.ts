@@ -1,10 +1,10 @@
 import { multerMid } from "./../../../middleware/multer";
 import {
-	indexAllNews,
-	postNews,
-	indexOneNews,
-	deleteNews,
-	putNews,
+  indexAllNews,
+  postNews,
+  indexOneNews,
+  deleteNews,
+  putNews,
 } from "./controller";
 import { Router } from "express";
 

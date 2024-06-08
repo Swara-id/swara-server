@@ -1,9 +1,9 @@
 import {
-	indexAllNewsType,
-	postNewsType,
-	indexOneNewsType,
-	deleteNewsType,
-	putNewsType,
+  indexAllNewsType,
+  postNewsType,
+  indexOneNewsType,
+  deleteNewsType,
+  putNewsType,
 } from "./controller";
 import { Router } from "express";
 

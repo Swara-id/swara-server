@@ -1,11 +1,11 @@
 import { multerMid } from "./../../../middleware/multer";
 import {
-	indexAllSuggestion,
-	postSuggestion,
-	indexOneSuggestion,
-	deleteSuggestion,
-	putSuggestion,
-	patchSuggestion,
+  indexAllSuggestion,
+  postSuggestion,
+  indexOneSuggestion,
+  deleteSuggestion,
+  putSuggestion,
+  patchSuggestion,
 } from "./controller";
 import { Router } from "express";
 

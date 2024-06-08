@@ -1,8 +1,8 @@
-import admin  from 'firebase-admin';
+import admin from "firebase-admin";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import path from 'path';
+import path from "path";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -16,8 +16,7 @@ const firebaseConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
-  measurementId:process.env.MEASUREMENT_ID
-
+  measurementId: process.env.MEASUREMENT_ID,
 };
 
 // Initialize Firebase
@@ -29,4 +28,4 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-export default admin ;
+export default admin;

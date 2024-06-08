@@ -1,10 +1,10 @@
 import { multerMid } from "./../../../middleware/multer";
 import {
-	indexAllCorpus,
-	postCorpus,
-	indexOneCorpus,
-	deleteCorpus,
-	// putCorpus,
+  indexAllCorpus,
+  postCorpus,
+  indexOneCorpus,
+  deleteCorpus,
+  // putCorpus,
 } from "./controller";
 import { Router } from "express";
 

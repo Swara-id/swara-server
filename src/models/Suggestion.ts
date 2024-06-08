@@ -1,28 +1,27 @@
 import { Challenge } from "./Challenge";
-import { Users, UsersTable } from "./Users";
+import { Users } from "./Users";
 
 import {
-	Generated,
-	ColumnType,
-	JSONColumnType,
-	Selectable,
-	Insertable,
-	Updateable,
+  Generated,
+  ColumnType,
+  Selectable,
+  Insertable,
+  Updateable,
 } from "kysely";
 
 export interface SuggestionTable {
-	id: Generated<number>;
-	uid: string;
-	type: "word" | "letter";
-	value: string;
-	verificationStatus: "approved" | "rejected" | "waiting";
-	attachmentUrl: string;
-	challengeId: null | Challenge["id"];
-	userId: Users["id"];
-	userLocation: string | null;
+  id: Generated<number>;
+  uid: string;
+  type: "word" | "letter";
+  value: string;
+  verificationStatus: "approved" | "rejected" | "waiting";
+  attachmentUrl: string;
+  challengeId: null | Challenge["id"];
+  userId: Users["id"];
+  userLocation: string | null;
 
-	createdAt: ColumnType<Date>;
-	updatedAt: ColumnType<Date>;
+  createdAt: ColumnType<Date>;
+  updatedAt: ColumnType<Date>;
 }
 
 export type Suggestion = Selectable<SuggestionTable>;
