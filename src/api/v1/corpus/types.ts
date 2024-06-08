@@ -12,8 +12,7 @@ export interface Image {
   createdAt: Date;
 }
 
-export interface CorpusGet {
-  corpusResult: CorpusResult;
+export interface CorpusGet extends CorpusResult {
   images: Image[];
 }
 

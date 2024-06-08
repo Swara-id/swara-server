@@ -1,153 +1,115 @@
-import { CorpusBody, CorpusGet, CorpusResult } from "./types";
-import { Request } from "express";
 import { db } from "../../../database";
+import { CorpusBody, CorpusGet } from "./types";
 import path from "path";
 import { deleteFile, uploadImage } from "../../../helper/helper";
-import { TRequest } from "../../../types";
 
-export const getAllCorpus = async (req: Request) => {
-  console.log(req);
+export const getAllCorpus = async () => {
+  console.log("masuk");
   const result = await db.selectFrom("corpus").selectAll().execute();
   return result;
 };
 
-export const getOneCorpus = async (req: Request) => {
-  const { id } = req.params;
+export const getOneCorpus = async (id: number | string) => {
   const numericId = Number(id);
 
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };
   }
 
-  try {
-    const result = await db
-      .selectFrom("corpusImage")
-      .innerJoin("corpus", "corpusImage.corpusId", "corpus.id")
-      .select([
-        "corpus.id",
-        "corpus.value",
-        "corpus.type",
-        "corpus.createdAt as corpusCreatedAt",
-        "corpus.updatedAt as corpusUpdatedAt",
-        "corpusImage.imageUrl",
-        "corpusImage.createdAt as imageCreatedAt",
-      ])
-      .where("corpus.id", "=", numericId)
-      .execute();
+  const result = await db
+    .selectFrom("corpusImage")
+    .innerJoin("corpus", "corpusImage.corpusId", "corpus.id")
+    .select([
+      "corpus.id",
+      "corpus.value",
+      "corpus.type",
+      "corpus.createdAt as corpusCreatedAt",
+      "corpus.updatedAt as corpusUpdatedAt",
+      "corpusImage.imageUrl",
+      "corpusImage.createdAt as imageCreatedAt"
+    ])
+    .where("corpus.id", "=", numericId)
+    .execute();
 
-    if (result.length === 0) {
-      throw { message: `No corpus found with ID ${numericId}`, status: 404 };
-    }
-
-    const formattedResult = result.reduce<CorpusGet>(
-      (acc, curr, index) => {
-        if (index === 0) {
-          acc.corpusResult = {
-            id: curr.id,
-            value: curr.value,
-            type: curr.type,
-            createdAt: curr.corpusCreatedAt,
-            updatedAt: curr.corpusUpdatedAt,
-          };
-        }
-        acc.images.push({
-          imageUrl: curr.imageUrl,
-          corpusId: curr.id,
-          createdAt: curr.imageCreatedAt,
-        });
-        return acc;
-      },
-      { corpusResult: null as unknown as CorpusResult, images: [] },
-    );
-
-    return { result: formattedResult, status: 200 };
-  } catch (error) {
-    console.error(error);
-    throw {
-      message: "An error occurred while fetching the corpus",
-      status: 500,
-    };
+  if (result.length === 0) {
+    throw { message: `No corpus found with ID ${numericId}`, status: 404 };
   }
+
+  const formattedResult = result.reduce<CorpusGet>((acc, curr, index) => {
+    if (index === 0) {
+      acc = {
+        id: curr.id,
+        value: curr.value,
+        type: curr.type,
+        images: [],
+        createdAt: curr.corpusCreatedAt,
+        updatedAt: curr.corpusUpdatedAt
+      };
+    }
+    acc.images.push({
+      imageUrl: curr.imageUrl,
+      corpusId: curr.id,
+      createdAt: curr.imageCreatedAt
+    });
+    return acc;
+  }, {} as CorpusGet);
+
+  return { result: formattedResult, status: 200 };
 };
 
-export const createCorpus = async (req: TRequest<CorpusBody>) => {
-  try {
-    const { body } = req;
-    console.log(body);
-    const myFile = req.files as Express.Multer.File[];
+export const createCorpus = async (
+  body: CorpusBody,
+  files: Express.Multer.File[]
+) => {
+  if (!files || files.length === 0) {
+    throw { message: "No file uploaded", status: 400 };
+  }
 
-    console.log(myFile);
+  const transaction = await db.transaction().execute(async (trx) => {
+    const corpusResult = await trx
+      .insertInto("corpus")
+      .values({
+        type: body.type,
+        value: body.value,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
 
-    if (!myFile || myFile.length === 0) {
-      throw { message: "No file uploaded", status: 400 };
-    }
+    const imageUploadPromises = files.map(async (element, index) => {
+      const fileExtension = path.extname(element.originalname);
+      const fileName = `image-${index.toString()}${fileExtension}`;
+      const imageUrl = await uploadImage(
+        element,
+        fileName,
+        `corpus/${corpusResult.id}`
+      );
 
-    const transaction = await db.transaction().execute(async (trx) => {
-      const corpusResult = await trx
-        .insertInto("corpus")
+      const imageResult = await trx
+        .insertInto("corpusImage")
         .values({
-          type: body.type,
-          value: body.value,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          corpusId: corpusResult.id,
+          imageUrl: imageUrl,
+          createdAt: new Date()
         })
         .returningAll()
         .executeTakeFirstOrThrow();
 
-      const imageUploadPromises = myFile.map(async (element, index) => {
-        const fileExtension = path.extname(element.originalname);
-        console.log("File extension:", fileExtension);
-
-        const fileName = `image-${index.toString()}${fileExtension}`;
-        console.log(fileName);
-
-        const imageUrl = await uploadImage(
-          element,
-          fileName,
-          `corpus/${corpusResult.id}`,
-        );
-
-        const imageResult = await trx
-          .insertInto("corpusImage")
-          .values({
-            corpusId: corpusResult.id,
-            imageUrl: imageUrl,
-            createdAt: new Date(),
-          })
-          .returningAll()
-          .executeTakeFirstOrThrow();
-
-        return imageResult;
-      });
-
-      const corpusImages = await Promise.all(imageUploadPromises);
-
-      return {
-        corpusResult,
-        corpusImages,
-      };
+      return imageResult;
     });
 
-    return transaction;
-  } catch (error) {
-    console.error(error);
+    const corpusImages = await Promise.all(imageUploadPromises);
 
-    if (error instanceof Error) {
-      throw { message: error.message, status: 500 };
-    } else if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error
-    ) {
-      throw error;
-    } else {
-      throw { message: "Internal server error", status: 500 };
-    }
-  }
+    return {
+      ...corpusResult,
+      corpusImages
+    };
+  });
+
+  return transaction;
 };
-
-export const deleteOneCorpus = async (req: Request) => {
-  const { id } = req.params;
+export const deleteOneCorpus = async (id: number | string) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };
@@ -162,56 +124,26 @@ export const deleteOneCorpus = async (req: Request) => {
   if (!images || images.length === 0) {
     throw {
       message: `No images found for corpus with ID ${numericId}`,
-      status: 404,
+      status: 404
     };
   }
 
-  console.log(images);
-
   const deletePromises = images.map((map) => {
-    deleteFile(map.imageUrl).catch((error) => {
+    return deleteFile(map.imageUrl).catch((error) => {
       console.log(error);
     });
   });
 
-  await db.transaction().execute(async (trx) => {
-    await trx.deleteFrom("corpus").where("id", "=", numericId).execute();
+  const corpusData = await db.transaction().execute(async (trx) => {
+    await trx.deleteFrom("corpus").where("id", "=", numericId).returningAll().execute();
+
   });
 
-  try {
-    await Promise.all(deletePromises);
-    return {
-      message: `Corpus with ID ${numericId} and associated files deleted successfully`,
-      status: 200,
-    };
-  } catch (err) {
-    console.error(err);
-    throw { message: `Failed to delete some files: ${err}`, status: 500 };
-  }
-};
+  await Promise.all(deletePromises);
 
-// export const updateOneCorpus = async (req: Request) => {
-// 	const { id } = req.params;
-// 	const numericId = Number(id);
-// 	if (isNaN(numericId)) {
-// 		throw { message: "Invalid ID parameter", status: 400 };
-// 	}
-// 	const { body } = req;
-// 	const result = await db
-// 		.updateTable("corpus")
-// 		.set({
-// 			type: body.type,
-// 			value: body.value,
-// 			updatedAt: new Date(),
-// 		})
-// 		.where("id", "=", numericId)
-// 		.returningAll()
-// 		.executeTakeFirst();
-// 	if (!result) {
-// 		throw { message: `No corpus found with ID ${numericId}`, status: 404 };
-// 	}
-// 	return {
-// 		message: `Successfully updated corpus with ID ${numericId}`,
-// 		status: 200,
-// 	};
-// };
+  return {
+    message: `Corpus with ID ${numericId} and associated files deleted successfully`,
+    data:corpusData,
+    status: 200 // Change status to 200 OK
+  };
+};

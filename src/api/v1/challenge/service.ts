@@ -67,7 +67,7 @@ export const updateOneChallenge = async (
   const result = await db
     .updateTable("challenge")
     .set({
-      uid: "string",
+      uid: body.uid,
       type: body.type,
       value: body.value,
       status: body.status,

@@ -1,15 +1,44 @@
-import multerMid from "../../../middleware/multer";
-import { indexAllQuiz, postQuiz, indexOneQuiz, deleteQuiz } from "./controller";
+import multerMid from "@/middleware/multer";
+import { TRequest } from "@/types";
+import QuizController from "./controller";
 import { Router } from "express";
+import { QuizBody } from "./types";
+import { Quiz } from "@/models/Quiz";
 
 const router = Router();
+const controller = new QuizController();
 
-router.get("/", indexAllQuiz);
+router.get("/", async (req: TRequest, res) => {
+  const result = await controller.indexAllQuiz();
+  res.status(controller.getStatus() ?? 200).json(result);
+});
 
-router.get("/:id", indexOneQuiz);
+router.get("/:id", async (req: TRequest<{ id: string }>, res) => {
+  const result = await controller.indexOneQuiz(req.params.id);
+  res.status(controller.getStatus() ?? 200).json(result);
+});
 
-router.post("/", multerMid.array("file"), postQuiz);
+router.post(
+  "/",
+  multerMid.array("file"),
+  async (req: TRequest<QuizBody>, res) => {
+    const result = await controller.postQuiz(
+      req.body,
+      req.files as Express.Multer.File[]
+    );
+    res.status(controller.getStatus() ?? 201).json(result);
+  }
+);
 
-router.delete("/:id", deleteQuiz);
+router.delete(
+  "/:id",
+  async (req: TRequest<Quiz, unknown, { id: string }>, res) => {
+    const controller = new QuizController();
+
+    const result = await controller.deleteQuiz(req.params.id);
+
+    res.status(controller.getStatus() ?? 204).json(result);
+  }
+);
 
 export default router;

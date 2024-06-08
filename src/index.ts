@@ -28,7 +28,7 @@ app.use(morgan("tiny"));
 app.use(express.static("build"));
 
 app.use(
-  "/api/v1/docs",
+  "/docs",
   swaggerUi.serve,
   async (_req: Request, res: Response) => {
     return res.send(

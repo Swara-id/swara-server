@@ -1,92 +1,132 @@
-import { CustomError } from "@/types";
+import {
+  Controller,
+  Delete,
+  FormField,
+  Get,
+  Path,
+  Post,
+  Route,
+  SuccessResponse,
+  UploadedFiles
+} from "tsoa";
 import {
   getAllCorpus,
   createCorpus,
   getOneCorpus,
-  deleteOneCorpus,
-  // updateOneCorpus,
+  deleteOneCorpus
 } from "./service";
-import { NextFunction, Request, Response } from "express";
+import { CorpusBody, CorpusResult, CorpusGet } from "./types";
+import { ListResponse, TResponse } from "@/types";
 
-export const indexAllCorpus = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const result = await getAllCorpus(req);
-
-    res.status(200).json({ data: result, pagination: {} });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const indexOneCorpus = async (req: Request, res: Response) => {
-  try {
-    const { result, status } = await getOneCorpus(req);
-    res.status(status).json({ data: result });
-  } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "status" in error &&
-      "message" in error
-    ) {
-      const { message, status } = error as CustomError;
-      res.status(status).json({ status, error: message });
-    } else {
-      res.status(500).json({ status: 500, error: "Unknown error occurred" });
+@Route("corpus")
+export default class CorpusController extends Controller {
+  @Get("/")
+  @SuccessResponse("200", "Success")
+  public async indexAllCorpus(): Promise<ListResponse<Partial<CorpusResult>>> {
+    try {
+      const result = await getAllCorpus();
+      if (!result || (Array.isArray(result) && result.length === 0)) {
+        throw { message: "No Corpus found", status: 404 };
+      }
+      this.setStatus(200);
+      return {
+        message: "success",
+        data: result,
+        pagination: {}
+      };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while fetching Corpus";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return {
+        message,
+        data: [],
+        pagination: {}
+      };
     }
   }
-};
 
-export const postCorpus = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const result = await createCorpus(req);
-    res.status(201).json({ data: result });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const deleteCorpus = async (req: Request, res: Response) => {
-  try {
-    const result = await deleteOneCorpus(req);
-    res.status(result.status).json(result);
-  } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "status" in error &&
-      "message" in error
-    ) {
-      const { message, status } = error as CustomError;
-      res.status(status).json({ status, error: message });
-    } else {
-      res.status(500).json({ status: 500, error: "Unknown error occurred" });
+  @Get("{id}")
+  public async indexOneCorpus(
+    @Path("id") id: number | string
+  ): Promise<TResponse<Partial<CorpusGet>>> {
+    try {
+      const { result, status } = await getOneCorpus(id);
+      if (!result) {
+        this.setStatus(404);
+        return { message: `No Corpus found with ID ${id}` };
+      }
+      this.setStatus(status);
+      return { message: "success", data: result };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while fetching Corpus";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return { message };
     }
   }
-};
 
-// export const putCorpus = async (
-// 	req: Request,
-// 	res: Response,
-// 	next: NextFunction
-// ) => {
-// 	try {
-// 		const { message, status } = await updateOneCorpus(req);
-// 		res.status(status).json({ message });
-// 	} catch (error: any) {
-// 		if (error && typeof error === 'object' && 'status' in error) {
-// 			const { message, status } = error;
-// 			res.status(status).json({ status, error: message });
-// 		} else {
-// 			res.status(500).json({ status: 500, error: 'Unknown error occurred' });
-// 		}
-// 	}
-// };
+  @Post()
+  public async postCorpus(
+    @FormField() body: CorpusBody,
+    @UploadedFiles() files?: Express.Multer.File[]
+  ): Promise<TResponse<Partial<CorpusGet>>> {
+    try {
+      if (!files || files.length === 0) {
+        this.setStatus(400);
+        throw { message: "No file uploaded" };
+      }
+      const result = await createCorpus(body, files);
+      this.setStatus(201);
+      return { message: "Create corpus success", data: result };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while creating Corpus";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return { message };
+    }
+  }
+
+  @Delete("{id}")
+  public async deleteCorpus(
+    @Path("id") id: number | string
+  ): Promise<TResponse> {
+    try {
+      const { message } = await deleteOneCorpus(id);
+      this.setStatus(200);
+
+      return {
+        message,
+      };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while deleting Corpus";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return { message };
+    }
+  }
+}
