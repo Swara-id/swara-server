@@ -3,7 +3,7 @@ import { TRequest } from "@/types";
 import CorpusController from "./controller";
 import { Router } from "express";
 import { CorpusBody } from "./types";
-import { Corpus } from "@/models/corpus";
+import { Corpus } from "@/models/Corpus";
 
 const router = Router();
 const controller = new CorpusController();

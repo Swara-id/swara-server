@@ -13,11 +13,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@api/*": ["./src/api/v1/*"],
-      "@config/*": ["./src/config/*"],
-      "@helper/*": ["./src/helper/*"],
-      "@middleware/*": ["./src/middleware/*"],
-      "@models/*": ["./src/models/*"],
       "tsoa": ["./node_modules/tsoa/dist"],
       "tsoa/*": ["./node_modules/tsoa/dist/*"]
     }

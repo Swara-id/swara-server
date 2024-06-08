@@ -22,7 +22,7 @@
     "uuidv4": "^6.2.13"
   },
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register ./src/index.ts",
+    "start": "node ./dist/src/index.js",
     "predev": "npm run swagger",
     "prebuild": "npm run swagger",
     "dev": "concurrently \"nodemon -r tsconfig-paths/register ./src/index.ts\" \"tsoa spec\"",
