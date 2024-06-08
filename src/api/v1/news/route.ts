@@ -2,7 +2,7 @@ import { multerMid } from "@/middleware/multer";
 import NewsController from "./controller";
 import { Router } from "express";
 import { TRequest } from "@/types";
-import { News } from "@models/News";
+import { NewNews, NewsUpdate } from "@models/News";
 
 const router = Router();
 
@@ -22,15 +22,19 @@ router.get("/:id", async (req: TRequest, res) => {
   res.status(controller.getStatus() ?? 200).json(result);
 });
 
-router.post("/", multerMid.single("file"), async (req: TRequest<News>, res) => {
-  const controller = new NewsController();
+router.post(
+  "/",
+  multerMid.single("file"),
+  async (req: TRequest<NewNews>, res) => {
+    const controller = new NewsController();
 
-  const result = await controller.postNews(req.body, req.file);
+    const result = await controller.postNews(req.body, req.file);
 
-  res.status(controller.getStatus() ?? 201).json(result);
-});
+    res.status(controller.getStatus() ?? 201).json(result);
+  }
+);
 
-router.patch("/:id", async (req: TRequest<News>, res) => {
+router.patch("/:id", async (req: TRequest<NewsUpdate>, res) => {
   const controller = new NewsController();
 
   const result = await controller.patchNews(req.params.id, req.body);

@@ -1,5 +1,5 @@
 import { db } from "@/database";
-import { News, NewNews } from "@models/News";
+import { NewNews, NewsUpdate } from "@models/News";
 import { deleteFile, uploadImage } from "@/helper/helper";
 import path from "path";
 import { v4 as uuid } from "uuid";
@@ -82,10 +82,7 @@ export const deleteOneNews = async (id: number | string) => {
   return result;
 };
 
-export const updateOneNews = async (
-  id: number | string,
-  body: Partial<News>
-) => {
+export const updateOneNews = async (id: number | string, body: NewsUpdate) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };
