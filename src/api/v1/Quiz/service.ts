@@ -36,7 +36,7 @@ export const getOneQuiz = async (req: Request) => {
 
   const result = {
     quizResult,
-    choices,
+    choices
   };
 
   return { result, status: 200 };
@@ -50,9 +50,13 @@ export const createQuiz = async (req: TRequest<QuizBody>) => {
 
     // if (!myFiles || myFiles.length === 0) {
     //   throw { message: "No file uploaded", status: 400 };
-    // } else if (myFiles.length !== body.choices.length) {
-    //   throw { message: "Invalid File Amount", status: 400 };
-    // }
+    // } else
+    // choice criteria
+    // 1. no image at all
+    // 2. if there is image amount must the same as choice
+    if (myFiles.length !== 0 && myFiles.length !== body.choices.length) {
+      throw { message: "Invalid File Amount", status: 400 };
+    }
 
     const transaction = await db.transaction().execute(async (trx) => {
       const quizResult = await trx
@@ -60,7 +64,7 @@ export const createQuiz = async (req: TRequest<QuizBody>) => {
         .values({
           question: body.question,
           createdAt: new Date(),
-          updatedAt: new Date(),
+          updatedAt: new Date()
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -75,7 +79,7 @@ export const createQuiz = async (req: TRequest<QuizBody>) => {
         const imageUrl = await uploadImage(
           file,
           fileName,
-          `quiz/${quizResult.id}`,
+          `quiz/${quizResult.id}`
         );
 
         const imageResult = await trx
@@ -86,7 +90,7 @@ export const createQuiz = async (req: TRequest<QuizBody>) => {
             isCorrect: JSON.parse(body.choices[index].isCorrect),
             imageUrl: imageUrl,
             updatedAt: new Date(),
-            createdAt: new Date(),
+            createdAt: new Date()
           })
           .returningAll()
           .execute();
@@ -94,11 +98,11 @@ export const createQuiz = async (req: TRequest<QuizBody>) => {
         return imageResult;
       });
 
-      const corpusImages = await Promise.all(imageUploadPromises);
+      const quizImages = await Promise.all(imageUploadPromises);
 
       return {
         quizResult,
-        corpusImages,
+        quizImages
       };
     });
 
@@ -135,8 +139,8 @@ export const deleteOneQuiz = async (req: Request) => {
 
   if (!images || images.length === 0) {
     throw {
-      message: `No images found for corpus with ID ${numericId}`,
-      status: 404,
+      message: `No images found for quiz with ID ${numericId}`,
+      status: 404
     };
   }
 
@@ -155,8 +159,8 @@ export const deleteOneQuiz = async (req: Request) => {
   try {
     await Promise.all(deletePromises);
     return {
-      message: `Corpus with ID ${numericId} and associated files deleted successfully`,
-      status: 200,
+      message: `quiz with ID ${numericId} and associated files deleted successfully`,
+      status: 200
     };
   } catch (err) {
     console.error(err);

@@ -1,5 +1,5 @@
 import { CustomError } from "@/types";
-import { getAllQuiz, createQuiz, getOneQuiz } from "./service";
+import { getAllQuiz, createQuiz, getOneQuiz, deleteOneQuiz } from "./service";
 import { NextFunction, Request, Response } from "express";
 
 export const indexAllQuiz = async (
@@ -38,6 +38,25 @@ export const postQuiz = async (req: Request, res: Response) => {
   try {
     const result = await createQuiz(req);
     res.status(200).json({ data: result });
+  } catch (error: unknown) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "status" in error &&
+      "message" in error
+    ) {
+      const { message, status } = error as CustomError;
+      res.status(status).json({ status, error: message });
+    } else {
+      res.status(500).json({ status: 500, error: "Unknown error occurred" });
+    }
+  }
+};
+
+export const deleteQuiz = async (req: Request, res: Response) => {
+  try {
+    const result = await deleteOneQuiz(req);
+    res.status(result.status).json(result);
   } catch (error: unknown) {
     if (
       error &&
