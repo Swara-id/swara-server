@@ -22,13 +22,12 @@
     "uuidv4": "^6.2.13"
   },
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start": "ts-node -r tsconfig-paths/register ./src/index.ts",
     "predev": "npm run swagger",
     "prebuild": "npm run swagger",
-    "dev": "concurrently \"nodemon -r tsconfig-paths/register src/index.ts\" \"npm run swagger\"",
+    "dev": "concurrently \"nodemon -r tsconfig-paths/register ./src/index.ts\" \"tsoa spec\"",
     "build": "tsc",
-    "serve": "node dist/index.js",
-    "swagger": "tsoa spec-and-routes",
+    "swagger": "tsoa spec",
     "lint": "npx eslint",
     "lint:fix": "npx eslint --fix",
     "lint:strict": "npx eslint '*/**/*.{js,ts}'",
