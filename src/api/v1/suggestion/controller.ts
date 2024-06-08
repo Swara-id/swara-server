@@ -1,112 +1,136 @@
-import { CustomError } from "@/types";
+import {
+  Body,
+  Controller,
+  Delete,
+  FormField,
+  Get,
+  Path,
+  Post,
+  Patch,
+  Route,
+  SuccessResponse,
+  UploadedFile
+} from "tsoa";
 import {
   getAllSuggestion,
   createSuggestion,
   getOneSuggestion,
   deleteOneSuggestion,
   updateOneSuggestion,
-  verificateOneSuggestion,
+  verificateOneSuggestion
 } from "./service";
-import { NextFunction, Request, Response } from "express";
+import { ListResponse, TResponse } from "@/types";
+import {
+  NewSuggestion,
+  Suggestion,
+  SuggestionUpdate
+} from "@models/Suggestion";
 
-export const indexAllSuggestion = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const result = await getAllSuggestion(req);
-
-    res.status(200).json({ data: result, pagination: {} });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const indexOneSuggestion = async (req: Request, res: Response) => {
-  try {
-    const { result, status } = await getOneSuggestion(req);
-    res.status(status).json({ data: result });
-  } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "status" in error &&
-      "message" in error
-    ) {
-      const { message, status } = error as CustomError;
-      res.status(status).json({ status, error: message });
-    } else {
-      res.status(500).json({ status: 500, error: "Unknown error occurred" });
+@Route("suggestion")
+export default class SuggestionController extends Controller {
+  @Get("/")
+  @SuccessResponse("200", "Success")
+  public async indexAllSuggestion(): Promise<ListResponse<Suggestion>> {
+    try {
+      const result = await getAllSuggestion();
+      this.setStatus(200);
+      return { message: "success", data: result, pagination: {} };
+    } catch (error) {
+      this.setStatus(500);
+      return {
+        message: "An error occurred while fetching Suggestions",
+        data: [],
+        pagination: {}
+      };
     }
   }
-};
 
-export const postSuggestion = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const result = await createSuggestion(req);
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const deleteSuggestion = async (req: Request, res: Response) => {
-  try {
-    const result = await deleteOneSuggestion(req);
-    res.status(result.status).json(result);
-  } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "status" in error &&
-      "message" in error
-    ) {
-      const { message, status } = error as CustomError;
-      res.status(status).json({ status, error: message });
-    } else {
-      res.status(500).json({ status: 500, error: "Unknown error occurred" });
+  @Get("{id}")
+  public async indexOneSuggestion(
+    @Path("id") id: number | string
+  ): Promise<TResponse<Suggestion>> {
+    try {
+      const result = await getOneSuggestion(id);
+      if (!result) {
+        this.setStatus(404);
+        return { message: `No Suggestion found with ID ${id}` };
+      }
+      this.setStatus(200);
+      return { message: "success", data: result };
+    } catch (error) {
+      this.setStatus(500);
+      return { message: "An error occurred while fetching the Suggestion" };
     }
   }
-};
 
-export const putSuggestion = async (req: Request, res: Response) => {
-  try {
-    const { message, status } = await updateOneSuggestion(req);
-    res.status(status).json({ message });
-  } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "status" in error &&
-      "message" in error
-    ) {
-      const { message, status } = error as CustomError;
-      res.status(status).json({ status, error: message });
-    } else {
-      res.status(500).json({ status: 500, error: "Unknown error occurred" });
+  @Post()
+  @SuccessResponse("201", "Created")
+  public async postSuggestion(
+    @FormField() body: NewSuggestion,
+    @UploadedFile("file") file?: Express.Multer.File
+  ): Promise<TResponse<Suggestion>> {
+    try {
+      const result = await createSuggestion(body, file);
+      this.setStatus(201);
+      return { message: "create suggestion success", data: result };
+    } catch (error) {
+      this.setStatus(500);
+      return { message: "An error occurred while creating the Suggestion" };
     }
   }
-};
-export const patchSuggestion = async (req: Request, res: Response) => {
-  try {
-    const { message, status } = await verificateOneSuggestion(req);
-    res.status(status).json({ message });
-  } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "status" in error &&
-      "message" in error
-    ) {
-      const { message, status } = error as CustomError;
-      res.status(status).json({ status, error: message });
-    } else {
-      res.status(500).json({ status: 500, error: "Unknown error occurred" });
+
+  @Patch("{id}")
+  @SuccessResponse("200", "Updated")
+  public async patchSuggestion(
+    @Path("id") id: number | string,
+    @Body() body: SuggestionUpdate
+  ): Promise<TResponse<Suggestion>> {
+    try {
+      const result = await updateOneSuggestion(id, body);
+      this.setStatus(200);
+      return {
+        message: `Update suggestion ${result.id} success`,
+        data: result
+      };
+    } catch (error) {
+      this.setStatus(500);
+      return { message: "An error occurred while updating the Suggestion" };
     }
   }
-};
+
+  @Delete("{id}")
+  @SuccessResponse("200", "Deleted")
+  public async deleteSuggestion(
+    @Path("id") id: number | string
+  ): Promise<TResponse<Suggestion>> {
+    try {
+      const result = await deleteOneSuggestion(id);
+      this.setStatus(200);
+      return {
+        message: `Delete suggestion ${result.id} success`,
+        data: result
+      };
+    } catch (error) {
+      this.setStatus(500);
+      return { message: "An error occurred while deleting the Suggestion" };
+    }
+  }
+
+  @Patch("{id}/verify")
+  @SuccessResponse("200", "Patched")
+  public async verifySuggestion(
+    @Path("id") id: number | string,
+    @Body() { point }: { point: number }
+  ): Promise<TResponse> {
+    try {
+      const { message } = await verificateOneSuggestion(id, point);
+      this.setStatus(200);
+      return {
+        message
+      };
+    } catch (error) {
+      this.setStatus(500);
+      return { message: "An error occurred while verifying the Suggestion" };
+    }
+  }
+}

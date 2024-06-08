@@ -3,10 +3,10 @@ import { Users } from "./Users";
 
 import {
   Generated,
-  ColumnType,
   Selectable,
   Insertable,
   Updateable,
+  ColumnType
 } from "kysely";
 
 export interface SuggestionTable {
@@ -19,9 +19,8 @@ export interface SuggestionTable {
   challengeId: null | Challenge["id"];
   userId: Users["id"];
   userLocation: string | null;
-
-  createdAt: ColumnType<Date>;
-  updatedAt: ColumnType<Date>;
+  createdAt?: ColumnType<Date>;
+  updatedAt?: ColumnType<Date>;
 }
 
 export type Suggestion = Selectable<SuggestionTable>;

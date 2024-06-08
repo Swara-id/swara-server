@@ -27,11 +27,15 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(express.static("build"));
 
-app.use("/docs", swaggerUi.serve, async (_req: Request, res: Response) => {
-  return res.send(
-    swaggerUi.generateHTML(await import("../build/swagger.json"))
-  );
-});
+app.use(
+  "/api/v1/docs",
+  swaggerUi.serve,
+  async (_req: Request, res: Response) => {
+    return res.send(
+      swaggerUi.generateHTML(await import("../build/swagger.json"))
+    );
+  }
+);
 
 app.get(`/${route}/health`, (_req: Request, res: Response) => {
   res.send("Hello, TypeScript Express!");

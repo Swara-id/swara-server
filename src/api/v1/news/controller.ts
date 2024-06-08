@@ -2,10 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  FormField,
   Get,
+  Patch,
   Path,
   Post,
-  Put,
   Route,
   SuccessResponse,
   UploadedFile
@@ -18,13 +19,13 @@ import {
   updateOneNews
 } from "./service";
 import { ListResponse, TResponse } from "@/types";
-import { News } from "@models/News";
+import { NewNews, News, NewsUpdate } from "@models/News";
 
 @Route("news")
 export default class NewsController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllNews(): Promise<ListResponse<Partial<News>>> {
+  public async indexAllNews(): Promise<ListResponse<News>> {
     try {
       const result = await getAllNews();
       if (!result || (Array.isArray(result) && result.length === 0)) {
@@ -44,9 +45,10 @@ export default class NewsController extends Controller {
   }
 
   @Get("{id}")
+  @SuccessResponse("200", "Success")
   public async indexOneNews(
     @Path("id") id: number | string
-  ): Promise<TResponse<Partial<News>>> {
+  ): Promise<TResponse<News>> {
     try {
       const result = await getOneNews(id);
       if (!result) {
@@ -72,9 +74,9 @@ export default class NewsController extends Controller {
   @Post()
   @SuccessResponse("201", "Created")
   public async postNews(
-    @Body() body: News,
+    @FormField() body: NewNews,
     @UploadedFile("file") file?: Express.Multer.File
-  ): Promise<TResponse<Partial<News>>> {
+  ): Promise<TResponse<News>> {
     try {
       const result = await createNews(body, file);
       this.setStatus(201);
@@ -93,12 +95,12 @@ export default class NewsController extends Controller {
     }
   }
 
-  @Put("{id}")
+  @Patch("{id}")
   @SuccessResponse("200", "Updated")
-  public async putNews(
+  public async patchNews(
     @Path("id") id: number | string,
-    @Body() body: News
-  ): Promise<TResponse<Partial<News>>> {
+    @Body() body: NewsUpdate
+  ): Promise<TResponse<News>> {
     try {
       const result = await updateOneNews(id, body);
       this.setStatus(200);
@@ -121,7 +123,7 @@ export default class NewsController extends Controller {
   @SuccessResponse("200", "Deleted")
   public async deleteNews(
     @Path("id") id: number | string
-  ): Promise<TResponse<Partial<News>>> {
+  ): Promise<TResponse<News>> {
     try {
       const result = await deleteOneNews(id);
       this.setStatus(200);

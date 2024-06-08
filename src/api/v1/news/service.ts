@@ -45,8 +45,6 @@ export const createNews = async (body: NewNews, file?: Express.Multer.File) => {
       userUid: body.userUid,
       newsTypeId: body.newsTypeId,
       dateOfEvent: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
       thumbnailUrl: imageUrl
     })
     .returningAll()
@@ -99,8 +97,7 @@ export const updateOneNews = async (
       description: body.description,
       userUid: body.userUid,
       newsTypeId: body.newsTypeId,
-      dateOfEvent: new Date(),
-      updatedAt: new Date()
+      dateOfEvent: body.dateOfEvent
     })
     .where("id", "=", numericId)
     .returningAll()

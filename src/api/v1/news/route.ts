@@ -30,10 +30,10 @@ router.post("/", multerMid.single("file"), async (req: TRequest<News>, res) => {
   res.status(controller.getStatus() ?? 201).json(result);
 });
 
-router.put("/:id", async (req: TRequest<News>, res) => {
+router.patch("/:id", async (req: TRequest<News>, res) => {
   const controller = new NewsController();
 
-  const result = await controller.putNews(req.params.id, req.body);
+  const result = await controller.patchNews(req.params.id, req.body);
 
   res.status(controller.getStatus() ?? 200).json(result);
 });

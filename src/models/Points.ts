@@ -3,7 +3,7 @@ import {
   ColumnType,
   Selectable,
   Insertable,
-  Updateable,
+  Updateable
 } from "kysely";
 import { Suggestion } from "./Suggestion";
 import { Quiz } from "./Quiz";
@@ -18,8 +18,8 @@ export interface PointsTable {
   suggestionId: Suggestion["id"] | null;
   points: number;
 
-  createdAt: ColumnType<Date>;
-  updatedAt: ColumnType<Date>;
+  createdAt?: ColumnType<Date>;
+  updatedAt?: ColumnType<Date>;
 }
 
 export type Points = Selectable<PointsTable>;

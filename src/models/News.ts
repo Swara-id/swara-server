@@ -4,21 +4,20 @@ import {
   ColumnType,
   Selectable,
   Insertable,
-  Updateable,
+  Updateable
 } from "kysely";
 
 export interface NewsTable {
   id: Generated<number>;
   uid: string;
-  title:string;
+  title: string;
   description: string;
   userUid: string;
   newsTypeId: NewsType["id"];
   dateOfEvent: ColumnType<Date>;
   thumbnailUrl: string;
-
-  createdAt: ColumnType<Date>;
-  updatedAt: ColumnType<Date>;
+  createdAt?: ColumnType<Date>;
+  updatedAt?: ColumnType<Date>;
 }
 
 export type News = Selectable<NewsTable>;

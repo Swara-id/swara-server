@@ -1,19 +1,15 @@
-import { Request } from "express";
-import { db } from "../../../database";
+import { db } from "@/database";
 import path from "path";
-import { deleteFile, uploadImage } from "../../../helper/helper";
+import { deleteFile, uploadImage } from "@/helper/helper";
 import { v4 as uuid } from "uuid";
-import { NewSuggestion, SuggestionUpdate } from "../../../models/Suggestion";
-import { TRequest } from "../../../types";
+import { NewSuggestion, SuggestionUpdate } from "@models/Suggestion";
 
-export const getAllSuggestion = async (req: Request) => {
-  console.log(req);
+export const getAllSuggestion = async () => {
   const result = await db.selectFrom("suggestion").selectAll().execute();
   return result;
 };
 
-export const getOneSuggestion = async (req: Request) => {
-  const { id } = req.params;
+export const getOneSuggestion = async (id: number | string) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };
@@ -24,70 +20,49 @@ export const getOneSuggestion = async (req: Request) => {
     .selectAll()
     .where("id", "=", numericId)
     .executeTakeFirst();
+
   if (!result) {
-    throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
+    throw {
+      message: `No suggestion found with ID ${numericId}`,
+      status: 404
+    };
   }
-  return { result, status: 200 };
+
+  return result;
 };
 
-export const createSuggestion = async (req: TRequest<NewSuggestion>) => {
-  try {
-    const { body } = req;
-    const myFile = req.file;
-
-    const randomUUID = uuid();
-
-    console.log(myFile);
-
-    if (!myFile) {
-      throw { message: "No file uploaded", status: 400 };
-    }
-
-    const fileExtension = path.extname(myFile.originalname);
-    console.log("File extension:", fileExtension); // Debugging log
-
-    const fileName = `${randomUUID}${fileExtension}`;
-
-    const imageUrl = await uploadImage(myFile, fileName, "suggestion");
-
-    const result = await db
-      .insertInto("suggestion")
-      .values({
-        uid: randomUUID,
-        attachmentUrl: imageUrl,
-        type: body.type,
-        value: body.value,
-        verificationStatus: "waiting",
-        userId: body.userId,
-        userLocation: body.userLocation,
-        challengeId: body.challengeId,
-
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .returningAll()
-      .executeTakeFirst();
-
-    return result;
-  } catch (error) {
-    console.error(error);
-
-    if (error instanceof Error) {
-      throw { message: error.message, status: 500 };
-    } else if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error
-    ) {
-      throw error;
-    } else {
-      throw { message: "Internal server error", status: 500 };
-    }
+export const createSuggestion = async (
+  body: NewSuggestion,
+  file?: Express.Multer.File
+) => {
+  if (!file) {
+    throw { message: "No file uploaded", status: 400 };
   }
+
+  const randomUUID = uuid();
+  const fileExtension = path.extname(file.originalname);
+  const fileName = `${randomUUID}${fileExtension}`;
+  const imageUrl = await uploadImage(file, fileName, "suggestion");
+
+  const result = await db
+    .insertInto("suggestion")
+    .values({
+      uid: randomUUID,
+      attachmentUrl: imageUrl,
+      type: body.type,
+      value: body.value,
+      verificationStatus: "waiting",
+      userId: body.userId,
+      userLocation: body.userLocation,
+      challengeId: body.challengeId
+    })
+    .returningAll()
+    .executeTakeFirst();
+
+  return result;
 };
 
-export const deleteOneSuggestion = async (req: Request) => {
-  const { id } = req.params;
+export const deleteOneSuggestion = async (id: number | string) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };
@@ -100,7 +75,10 @@ export const deleteOneSuggestion = async (req: Request) => {
     .executeTakeFirst();
 
   if (!itemFile) {
-    throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
+    throw {
+      message: `No suggestion found with ID ${numericId}`,
+      status: 404
+    };
   }
 
   const result = await db
@@ -110,37 +88,30 @@ export const deleteOneSuggestion = async (req: Request) => {
     .executeTakeFirst();
 
   if (!result) {
-    throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
+    throw {
+      message: `No suggestion found with ID ${numericId}`,
+      status: 404
+    };
   }
 
   if (itemFile.attachmentUrl) {
-    try {
-      const fileName = path.basename(itemFile.attachmentUrl);
-      if (fileName) {
-        const filePath = `suggestion/${fileName}`;
-        console.log(filePath);
-        await deleteFile(filePath);
-      } else {
-        console.error("Failed:", itemFile.attachmentUrl);
-      }
-    } catch (error) {
-      console.error(`Failed to delete image from storage: ${error}`);
-    }
+    const fileName = path.basename(itemFile.attachmentUrl);
+    const filePath = `suggestion/${fileName}`;
+    await deleteFile(filePath);
   }
 
-  return {
-    message: `Successfully deleted suggestion with ID ${numericId}`,
-    status: 200,
-  };
+  return result;
 };
 
-export const updateOneSuggestion = async (req: TRequest<SuggestionUpdate>) => {
-  const { id } = req.params;
+export const updateOneSuggestion = async (
+  id: number | string,
+  body: SuggestionUpdate
+) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };
   }
-  const { body } = req;
+
   const result = await db
     .updateTable("suggestion")
     .set({
@@ -148,78 +119,55 @@ export const updateOneSuggestion = async (req: TRequest<SuggestionUpdate>) => {
       type: body.type,
       value: body.value,
       verificationStatus: "waiting",
-      challengeId: body.challengeId,
-
-      updatedAt: new Date(),
+      challengeId: body.challengeId
     })
     .where("id", "=", numericId)
     .returningAll()
     .executeTakeFirst();
+
   if (!result) {
-    throw { message: `No suggestion found with ID ${numericId}`, status: 404 };
+    throw {
+      message: `No suggestion found with ID ${numericId}`,
+      status: 404
+    };
   }
-  return {
-    message: `Successfully updated suggestion with ID ${numericId}`,
-    status: 200,
-  };
+
+  return result;
 };
 
 export const verificateOneSuggestion = async (
-  req: TRequest<{ point: number }>,
+  id: number | string,
+  point: number
 ) => {
-  const { id } = req.params;
   const numericId = Number(id);
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };
   }
-  const { body } = req;
 
   await db.transaction().execute(async (trx) => {
     const suggestionResult = await trx
       .updateTable("suggestion")
       .set({
-        verificationStatus: "approved",
-        updatedAt: new Date(),
+        verificationStatus: "approved"
       })
       .where("id", "=", numericId)
       .returningAll()
       .executeTakeFirstOrThrow();
-    if (!suggestionResult) {
-      throw {
-        message: `No suggestion found with ID ${numericId}`,
-        status: 404,
-      };
-    }
 
-    const pointResult = await trx
+    await trx
       .insertInto("points")
       .values({
         desc: "Suggestion approved",
         userId: suggestionResult.userId,
         source: "suggestion",
         suggestionId: suggestionResult.id,
-        points: body.point,
-
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        points: point
       })
       .returningAll()
       .executeTakeFirst();
-    if (!pointResult) {
-      throw {
-        message: `Failed to create points for suggestion with ID ${numericId}`,
-        status: 500,
-      };
-    }
-
-    return {
-      verifyStatus: "Suggestion Approved",
-      pointResult,
-    };
   });
 
   return {
-    message: `Successfully verify suggestion with ID ${numericId}`,
-    status: 200,
+    message: `Successfully verified suggestion with ID ${numericId}`
   };
 };
