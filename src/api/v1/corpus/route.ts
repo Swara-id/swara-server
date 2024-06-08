@@ -3,7 +3,6 @@ import { TRequest } from "@/types";
 import CorpusController from "./controller";
 import { Router } from "express";
 import { CorpusBody } from "./types";
-import { Corpus } from "@/models/Corpus";
 
 const router = Router();
 const controller = new CorpusController();
@@ -32,7 +31,7 @@ router.post(
 
 router.delete(
   "/:id",
-  async (req: TRequest<Corpus, unknown, { id: string }>, res) => {
+  async (req: TRequest<unknown, unknown, { id: string }>, res) => {
     const controller = new CorpusController();
 
     const result = await controller.deleteCorpus(req.params.id);

@@ -2,7 +2,7 @@ import { multerMid } from "@/middleware/multer";
 import SuggestionController from "./controller";
 import { Router } from "express";
 import { TRequest } from "@/types";
-import { Suggestion } from "@models/Suggestion";
+import { Suggestion } from "@/models/Suggestion";
 
 const router = Router();
 

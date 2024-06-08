@@ -1,8 +1,8 @@
 import { db } from "@/database";
 import path from "path";
-import { deleteFile, uploadImage } from "@/helper/helper";
+import { deleteFile, uploadImage } from "@/models/helper";
 import { v4 as uuid } from "uuid";
-import { NewSuggestion, SuggestionUpdate } from "@models/Suggestion";
+import { NewSuggestion, SuggestionUpdate } from "@/models/Suggestion";
 
 export const getAllSuggestion = async () => {
   const result = await db.selectFrom("suggestion").selectAll().execute();

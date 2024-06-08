@@ -24,7 +24,7 @@ import {
   NewSuggestion,
   Suggestion,
   SuggestionUpdate
-} from "@models/Suggestion";
+} from "@/models/Suggestion";
 
 @Route("suggestion")
 export default class SuggestionController extends Controller {

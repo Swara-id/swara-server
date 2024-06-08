@@ -2,7 +2,7 @@ import { multerMid } from "@/middleware/multer";
 import NewsController from "./controller";
 import { Router } from "express";
 import { TRequest } from "@/types";
-import { NewNews, NewsUpdate } from "@models/News";
+import { NewNews, NewsUpdate } from "@/models/News";
 
 const router = Router();
 
