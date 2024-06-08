@@ -1,4 +1,4 @@
-import { CustomError } from "@/types";
+import { CustomError } from "../../../types";
 import {
   createUser,
   // deleteOneUser,

@@ -1,9 +1,9 @@
-import multerMid from "@/middleware/multer";
-import { TRequest } from "@/types";
+import multerMid from "../../../middleware/multer";
+import { TRequest } from "../../../types";
 import QuizController from "./controller";
 import { Router } from "express";
 import { QuizBody } from "./types";
-import { Quiz } from "@/models/Quiz";
+import { Quiz } from "../../../models/Quiz";
 
 const router = Router();
 const controller = new QuizController();

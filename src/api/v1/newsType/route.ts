@@ -1,7 +1,7 @@
 import NewsTypeController from "./controller";
 import { Router } from "express";
-import { TRequest } from "@/types";
-import { NewsType, NewNewsType } from "@/models/NewsType";
+import { TRequest } from "../../../types";
+import { NewsType, NewNewsType } from "../../../models/NewsType";
 
 const router = Router();
 

@@ -1,8 +1,8 @@
-import { TRequest } from "@/types";
+import { TRequest } from "../../../types";
 import { multerMid } from "./../../../middleware/multer";
 import ChallengeController from "./controller";
 import { Router } from "express";
-import { Challenge } from "@/models/Challenge";
+import { Challenge } from "../../../models/Challenge";
 
 const router = Router();
 

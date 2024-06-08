@@ -18,8 +18,8 @@ import {
   deleteOneNews,
   updateOneNews
 } from "./service";
-import { ListResponse, TResponse } from "@/types";
-import { NewNews, News, NewsUpdate } from "@/models/News";
+import { ListResponse, TResponse } from "../../../types";
+import { NewNews, News, NewsUpdate } from "../../../models/News";
 
 @Route("news")
 export default class NewsController extends Controller {

@@ -1,8 +1,9 @@
-import { db } from "@/database";
-import { NewNews, NewsUpdate } from "@/models/News";
-import { deleteFile, uploadImage } from "@/helper/helper";
+
 import path from "path";
 import { v4 as uuid } from "uuid";
+import { db } from "../../../database";
+import { uploadImage, deleteFile } from "../../../helper/helper";
+import { NewNews, NewsUpdate } from "../../../models/News";
 
 export const getAllNews = async () => {
   const result = await db.selectFrom("news").selectAll().execute();

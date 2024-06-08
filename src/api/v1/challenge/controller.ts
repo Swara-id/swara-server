@@ -16,8 +16,8 @@ import {
   deleteOneChallenge,
   updateOneChallenge
 } from "./service";
-import { ListResponse, TResponse } from "@/types";
-import { Challenge } from "@/models/Challenge";
+import { ListResponse, TResponse } from "../../../types";
+import { Challenge } from "../../../models/Challenge";
 
 @Route("challenge")
 export default class ChallengeController extends Controller {

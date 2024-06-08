@@ -1,8 +1,8 @@
-import multerMid from "@/middleware/multer";
-import { TRequest } from "@/types";
 import CorpusController from "./controller";
 import { Router } from "express";
 import { CorpusBody } from "./types";
+import multerMid from "../../../middleware/multer";
+import { TRequest } from "../../../types";
 
 const router = Router();
 const controller = new CorpusController();

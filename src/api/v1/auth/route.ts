@@ -1,4 +1,4 @@
-import { TRequest } from "@/types";
+import { TRequest } from "../../../types";
 import UserController from "./controller";
 import { Router } from "express";
 

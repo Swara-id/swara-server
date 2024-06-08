@@ -16,8 +16,8 @@ import {
   deleteOneNewsType,
   updateOneNewsType
 } from "./service";
-import { ListResponse, TResponse } from "@/types";
-import { NewsType, NewNewsType, NewsTypeUpdate } from "@/models/NewsType";
+import { ListResponse, TResponse } from "../../../types";
+import { NewsType, NewNewsType, NewsTypeUpdate } from "../../../models/NewsType";
 
 @Route("news-types")
 export default class NewsTypeController extends Controller {

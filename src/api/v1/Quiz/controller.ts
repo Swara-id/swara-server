@@ -16,7 +16,7 @@ import {
   deleteOneQuiz
 } from "./service";
 import { QuizBody, QuizResult, QuizGet } from "./types";
-import { ListResponse, TResponse } from "@/types";
+import { ListResponse, TResponse } from "../../../types";
 
 @Route("Quiz")
 export default class QuizController extends Controller {

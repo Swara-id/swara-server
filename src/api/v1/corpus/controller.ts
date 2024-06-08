@@ -16,7 +16,7 @@ import {
   deleteOneCorpus
 } from "./service";
 import { CorpusBody, CorpusResult, CorpusGet } from "./types";
-import { ListResponse, TResponse } from "@/types";
+import { ListResponse, TResponse } from "../../../types";
 
 @Route("corpus")
 export default class CorpusController extends Controller {

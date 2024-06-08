@@ -1,5 +1,5 @@
-import { db } from "@/database";
-import { NewNewsType, NewsTypeUpdate } from "@/models/NewsType";
+import { db } from "../../../database";
+import { NewNewsType, NewsTypeUpdate } from "../../../models/NewsType";
 
 export const getAllNewsTypes = async () => {
   const result = await db.selectFrom("newsType").selectAll().execute();

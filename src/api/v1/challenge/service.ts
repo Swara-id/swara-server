@@ -1,5 +1,5 @@
-import { db } from "@/database";
-import { Challenge, NewChallenge } from "@/models/Challenge";
+import { db } from "../../../database";
+import { Challenge, NewChallenge } from "../../../models/Challenge";
 
 export const getAllChallenge = async () => {
   const result = await db.selectFrom("challenge").selectAll().execute();

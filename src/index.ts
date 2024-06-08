@@ -1,18 +1,18 @@
 import "dotenv/config";
-import "@/config/firebase-config";
+import "./config/firebase-config";
 
 import express, { Request, Response, urlencoded } from "express";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 
-import corpusRouter from "@/api/v1/corpus/route";
-import usersRouter from "@/api/v1/users/route";
-import quizRouter from "@/api/v1/Quiz/route";
-import newsRouter from "@/api/v1/news/route";
-import suggestionRouter from "@/api/v1/suggestion/route";
-import eventTypeRouter from "@/api/v1/newsType/route";
-import challengeTypeRouter from "@/api/v1/challenge/route";
-import authRouter from "@/api/v1/auth/route";
+import corpusRouter from "./api/v1/corpus/route";
+import usersRouter from "./api/v1/users/route";
+import quizRouter from "./api/v1/Quiz/route";
+import newsRouter from "./api/v1/news/route";
+import suggestionRouter from "./api/v1/suggestion/route";
+import eventTypeRouter from "./api/v1/newsType/route";
+import challengeTypeRouter from "./api/v1/challenge/route";
+import authRouter from "./api/v1/auth/route";
 
 const app = express();
 const port = process.env.PORT || 3000;
