@@ -28,9 +28,17 @@ export interface CustomError {
   status: number;
 }
 
-export interface TRequest<T = unknown> extends Request {
-  body: T;
-}
+import * as core from "express-serve-static-core";
+
+export interface Query extends core.Query {}
+
+export interface URLParams extends core.ParamsDictionary {}
+
+export interface TRequest<
+  ReqBody = unknown,
+  ReqQuery = Query,
+  Params extends URLParams = core.ParamsDictionary
+> extends Request<Params, unknown, ReqBody, ReqQuery> {}
 
 export interface TResponse<T = undefined> {
   message: string;
@@ -41,9 +49,13 @@ export interface ListResponse<T = undefined> {
   message: string;
   data: T[];
   pagination: {
-    page: number;
-    perPage: number;
-    total: number;
-    pageCount: number;
+    page?: number;
+    perPage?: number;
+    total?: number;
+    pageCount?: number;
   };
+}
+
+export interface ErrorResponse {
+  message: string;
 }

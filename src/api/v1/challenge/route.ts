@@ -1,23 +1,59 @@
+import { TRequest } from "@/types";
 import { multerMid } from "./../../../middleware/multer";
-import {
-	indexAllChallenge,
-	postChallenge,
-	indexOneChallenge,
-	deleteChallenge,
-	putChallenge,
-} from "./controller";
+import ChallengeController from "./controller";
 import { Router } from "express";
+import { Challenge } from "@/models/Challenge";
 
 const router = Router();
 
-router.get("/", indexAllChallenge);
+router.get("/", async (req: TRequest, res) => {
+  const controller = new ChallengeController();
 
-router.get("/:id", indexOneChallenge);
+  const result = controller.indexAllChallenge();
 
-router.post("/", multerMid.single("file"), postChallenge);
+  res.status(controller.getStatus() ?? 200).json(result);
+});
 
-router.delete("/:id", deleteChallenge);
+router.get("/:id", async (req: TRequest, res) => {
+  const controller = new ChallengeController();
 
-router.put("/:id", putChallenge);
+  const result = await controller.indexOneChallenge(req.params.id);
+
+  res.status(controller.getStatus() ?? 200).json(result);
+});
+
+router.post(
+  "/",
+  multerMid.single("file"),
+  async (req: TRequest<Challenge>, res) => {
+    const controller = new ChallengeController();
+
+    const result = await controller.postChallenge(req.body);
+
+    res.status(controller.getStatus() ?? 201).json(result);
+  }
+);
+
+router.patch(
+  "/:id",
+  async (req: TRequest<Challenge, unknown, { id: string }>, res) => {
+    const controller = new ChallengeController();
+
+    const result = await controller.patchChallenge(req.params.id, req.body);
+
+    res.status(controller.getStatus() ?? 200).json(result);
+  }
+);
+
+router.delete(
+  "/:id",
+  async (req: TRequest<Challenge, unknown, { id: string }>, res) => {
+    const controller = new ChallengeController();
+
+    const result = await controller.deleteChallenge(req.params.id);
+
+    res.status(controller.getStatus() ?? 200).json(result);
+  }
+);
 
 export default router;

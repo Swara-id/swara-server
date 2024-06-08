@@ -1,77 +1,145 @@
 import {
-	getAllChallenge,
-	createChallenge,
-	getOneChallenge,
-	deleteOneChallenge,
-	updateOneChallenge,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Path,
+  Post,
+  Route,
+  SuccessResponse
+} from "tsoa";
+import {
+  getAllChallenge,
+  createChallenge,
+  getOneChallenge,
+  deleteOneChallenge,
+  updateOneChallenge
 } from "./service";
-import { NextFunction, Request, Response } from "express";
+import { ListResponse, TResponse } from "@/types";
+import { Challenge } from "@models/Challenge";
 
-export const indexAllChallenge = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const result = await getAllChallenge(req);
+@Route("challenge")
+export default class ChallengeController extends Controller {
+  @Get("/")
+  @SuccessResponse("200", "Success")
+  public async indexAllChallenge(): Promise<ListResponse<Partial<Challenge>>> {
+    try {
+      const result = await getAllChallenge();
+      if (!result || (Array.isArray(result) && result.length === 0)) {
+        this.setStatus(404);
+        throw { message: "No Challenge found", status: 404 };
+      }
+      this.setStatus(200);
+      return {
+        message: "success",
+        data: result,
+        pagination: {}
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "An error occurred while fetching Challenge";
+      this.setStatus(500);
+      return {
+        message,
+        data: [],
+        pagination: {}
+      };
+    }
+  }
 
-		res.status(200).json({ data: result, pagination: {} });
-	} catch (error) {
-		next(error);
-	}
-};
+  @Get("{id}")
+  public async indexOneChallenge(
+    @Path("id") id: number | string
+  ): Promise<TResponse<Partial<Challenge>>> {
+    try {
+      const result = await getOneChallenge(id);
+      if (!result) {
+        this.setStatus(404);
+        return { message: `No Challenge found with ID ${id}` };
+      }
+      this.setStatus(200);
+      return { message: "success", data: result };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while fetching Challenge";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return { message };
+    }
+  }
 
-export const indexOneChallenge = async (req: Request, res: Response) => {
-	try {
-		const { result, status } = await getOneChallenge(req);
-		res.status(status).json({ data: result });
-	} catch (error: any) {
-		if (error && typeof error === "object" && "status" in error) {
-			const { message, status } = error;
-			res.status(status).json({ status, error: message });
-		} else {
-			res.status(500).json({ status: 500, error: "Unknown error occurred" });
-		}
-	}
-};
+  @Post()
+  public async postChallenge(
+    @Body() body: Challenge
+  ): Promise<TResponse<Partial<Challenge>>> {
+    try {
+      const result = await createChallenge(body);
+      this.setStatus(201);
+      return { message: "create challenge success", data: result };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while creating Challenge";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return { message };
+    }
+  }
 
-export const postChallenge = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const result = await createChallenge(req);
-		res.status(201).json(result);
-	} catch (error) {
-		next(error);
-	}
-};
+  @Patch("{id}")
+  public async patchChallenge(
+    @Path("id") id: number | string,
+    @Body() body: Challenge
+  ): Promise<TResponse<Partial<Challenge>>> {
+    try {
+      const result = await updateOneChallenge(id, body);
+      this.setStatus(201);
+      return { message: `Update challenge ${result.id} success`, data: result };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while updating Challenge";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return { message };
+    }
+  }
 
-export const deleteChallenge = async (req: Request, res: Response) => {
-	try {
-		const result = await deleteOneChallenge(req);
-		res.status(result.status).json(result);
-	} catch (error: any) {
-		if (error && typeof error === "object" && "status" in error) {
-			const { message, status } = error;
-			res.status(status).json({ status, error: message });
-		} else {
-			res.status(500).json({ status: 500, error: "Unknown error occurred" });
-		}
-	}
-};
-
-export const putChallenge = async (req: Request, res: Response) => {
-	try {
-		const { message, status } = await updateOneChallenge(req);
-		res.status(status).json({ message });
-	} catch (error: any) {
-		if (error && typeof error === "object" && "status" in error) {
-			const { message, status } = error;
-			res.status(status).json({ status, error: message });
-		} else {
-			res.status(500).json({ status: 500, error: "Unknown error occurred" });
-		}
-	}
-};
+  @Delete("{id}")
+  public async deleteChallenge(
+    @Path("id") id: number | string
+  ): Promise<TResponse<Partial<Challenge>>> {
+    try {
+      const result = await deleteOneChallenge(id);
+      this.setStatus(200);
+      return { message: `Delete challenge ${result.id} success`, data: result };
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? (error.message as string)
+          : "An error occurred while deleting Challenge";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error.status as number)
+          : 500;
+      this.setStatus(status);
+      return { message };
+    }
+  }
+}

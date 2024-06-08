@@ -3,7 +3,7 @@ import {
   ColumnType,
   Selectable,
   Insertable,
-  Updateable,
+  Updateable
 } from "kysely";
 
 export interface ChallengeTable {
