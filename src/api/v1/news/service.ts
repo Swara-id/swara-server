@@ -54,10 +54,11 @@ export const createNews = async (req: TRequest<NewNews>) => {
       .insertInto("news")
       .values({
         uid: randomUUID,
+        title:body.title,
         description: body.description,
         userUid: body.userUid,
         newsTypeId: body.newsTypeId,
-        dateOfEvent: new Date(),
+        dateOfEvent: body.dateOfEvent,
 
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -97,8 +98,9 @@ export const deleteOneNews = async (req: Request) => {
     .where("id", "=", numericId)
     .executeTakeFirst();
 
+    console.log(itemFile);
   if (!itemFile) {
-    throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+    throw { message: `No newsImage found with ID ${numericId}`, status: 404 };
   }
 
   const result = await db
@@ -113,17 +115,10 @@ export const deleteOneNews = async (req: Request) => {
 
   if (itemFile.thumbnailUrl) {
     try {
-      const fileName = path.basename(itemFile.thumbnailUrl);
-      if (fileName) {
-        const filePath = `news/${fileName}`;
+        const filePath = `news/${itemFile.thumbnailUrl}`;
         console.log(filePath);
         await deleteFile(filePath);
-      } else {
-        console.error(
-          "Failed to extract UID from thumbnail URL:",
-          itemFile.thumbnailUrl,
-        );
-      }
+
     } catch (error) {
       console.error(`Failed to delete image from storage: ${error}`);
     }

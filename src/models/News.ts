@@ -10,6 +10,7 @@ import {
 export interface NewsTable {
   id: Generated<number>;
   uid: string;
+  title:string;
   description: string;
   userUid: string;
   newsTypeId: NewsType["id"];
