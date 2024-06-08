@@ -1,6 +1,6 @@
 import { db } from "@/database";
 import path from "path";
-import { deleteFile, uploadImage } from "@/models/helper";
+import { deleteFile, uploadImage } from "@/helper/helper";
 import { v4 as uuid } from "uuid";
 import { NewSuggestion, SuggestionUpdate } from "@/models/Suggestion";
 
