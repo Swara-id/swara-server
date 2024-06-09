@@ -4,7 +4,7 @@ import { CorpusImageTable } from "./models/CorpusImage";
 import { SuggestionTable } from "./models/Suggestion";
 import { ChallengeUpdate } from "./models/Challenge";
 import { NewsTable } from "./models/News";
-import { CorpusTable } from "./models/corpus";
+import { CorpusTable } from "./models/Corpus";
 import { UsersTable } from "./models/Users";
 import { QuizTable } from "./models/Quiz";
 import { NewsTypeTable } from "./models/NewsType";

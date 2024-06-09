@@ -1,10 +1,5 @@
-import {
-  ColumnType,
-  Selectable,
-  Insertable,
-  Updateable,
-} from "kysely";
-import { Corpus } from "./corpus";
+import { ColumnType, Selectable, Insertable, Updateable } from "kysely";
+import { Corpus } from "./Corpus";
 
 export interface CorpusImageTable {
   imageUrl: string;
