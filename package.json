@@ -36,7 +36,7 @@
     "tsconfig-paths": "^4.2.0"
   },
   "scripts": {
-    "start": "node ./dist/index.js",
+    "start": "node ./dist/src/index.js",
     "predev": "npm run swagger",
     "prebuild": "npm run swagger",
     "dev": "concurrently \"nodemon -r tsconfig-paths/register ./src/index.ts\" \"tsoa spec\"",
