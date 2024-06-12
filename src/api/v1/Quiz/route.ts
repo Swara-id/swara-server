@@ -3,7 +3,6 @@ import { TRequest } from "../../../types";
 import QuizController from "./controller";
 import { Router } from "express";
 import { QuizBody } from "./types";
-import { Quiz } from "../../../models/Quiz";
 
 const router = Router();
 const controller = new QuizController();
@@ -32,7 +31,7 @@ router.post(
 
 router.delete(
   "/:id",
-  async (req: TRequest<Quiz, unknown, { id: string }>, res) => {
+  async (req: TRequest<unknown, unknown, { id: string }>, res) => {
     const controller = new QuizController();
 
     const result = await controller.deleteQuiz(req.params.id);

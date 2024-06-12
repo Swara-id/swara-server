@@ -1,8 +1,8 @@
+import { NewsBody } from "./types";
 import path from "path";
 import { v4 as uuid } from "uuid";
 import { db } from "../../../database";
 import { uploadImage, deleteFile } from "../../../helper/helper";
-import { NewNews, NewsUpdate } from "../../../models/News";
 
 export const getAllNews = async () => {
   const result = await db.selectFrom("news").selectAll().execute();
@@ -26,7 +26,10 @@ export const getOneNews = async (id: number | string) => {
   return result;
 };
 
-export const createNews = async (body: NewNews, file?: Express.Multer.File) => {
+export const createNews = async (
+  body: NewsBody,
+  file?: Express.Multer.File
+) => {
   if (!file) {
     throw { message: "No file uploaded", status: 400 };
   }
@@ -44,7 +47,7 @@ export const createNews = async (body: NewNews, file?: Express.Multer.File) => {
       description: body.description,
       userUid: body.userUid,
       newsTypeId: body.newsTypeId,
-      dateOfEvent: new Date(),
+      dateOfEvent: body.dateOfEvent,
       thumbnailUrl: imageUrl
     })
     .returningAll()
@@ -82,7 +85,10 @@ export const deleteOneNews = async (id: number | string) => {
   return result;
 };
 
-export const updateOneNews = async (id: number | string, body: NewsUpdate) => {
+export const updateOneNews = async (
+  id: number | string,
+  body: Partial<NewsBody>
+) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
     throw { message: "Invalid ID parameter", status: 400 };

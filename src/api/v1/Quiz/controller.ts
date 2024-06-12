@@ -9,20 +9,14 @@ import {
   SuccessResponse,
   UploadedFiles
 } from "tsoa";
-import {
-  getAllQuiz,
-  createQuiz,
-  getOneQuiz,
-  deleteOneQuiz
-} from "./service";
-import { QuizBody, QuizResult, QuizGet } from "./types";
-import { ListResponse, TResponse } from "../../../types";
+import { getAllQuiz, createQuiz, getOneQuiz, deleteOneQuiz } from "./service";
+import { QuizBody, QuizListResponse, QuizResponse } from "./types";
 
-@Route("Quiz")
+@Route("quiz")
 export default class QuizController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllQuiz(): Promise<ListResponse<Partial<QuizResult>>> {
+  public async indexAllQuiz(): Promise<QuizListResponse> {
     try {
       const result = await getAllQuiz();
       if (!result || (Array.isArray(result) && result.length === 0)) {
@@ -55,14 +49,14 @@ export default class QuizController extends Controller {
   @Get("{id}")
   public async indexOneQuiz(
     @Path("id") id: number | string
-  ): Promise<TResponse<Partial<QuizGet>>> {
+  ): Promise<QuizResponse> {
     try {
-      const { result, status } = await getOneQuiz(id);
+      const result = await getOneQuiz(id);
       if (!result) {
         this.setStatus(404);
         return { message: `No Quiz found with ID ${id}` };
       }
-      this.setStatus(status);
+      this.setStatus(200);
       return { message: "success", data: result };
     } catch (error) {
       const message =
@@ -82,7 +76,7 @@ export default class QuizController extends Controller {
   public async postQuiz(
     @FormField() body: QuizBody,
     @UploadedFiles() files?: Express.Multer.File[]
-  ): Promise<TResponse<Partial<QuizGet>>> {
+  ): Promise<QuizResponse> {
     try {
       if (!files || files.length === 0) {
         this.setStatus(400);
@@ -108,13 +102,13 @@ export default class QuizController extends Controller {
   @Delete("{id}")
   public async deleteQuiz(
     @Path("id") id: number | string
-  ): Promise<TResponse> {
+  ): Promise<QuizResponse> {
     try {
       const { message } = await deleteOneQuiz(id);
       this.setStatus(200);
 
       return {
-        message,
+        message
       };
     } catch (error) {
       const message =
