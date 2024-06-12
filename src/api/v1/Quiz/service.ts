@@ -55,9 +55,7 @@ export const createQuiz = async (
     const quizResult = await trx
       .insertInto("quiz")
       .values({
-        question: body.question,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        question: body.question
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -77,9 +75,7 @@ export const createQuiz = async (
           value: body.choices[index].value,
           quizId: quizResult.id,
           isCorrect: JSON.parse(body.choices[index].isCorrect),
-          imageUrl: imageUrl,
-          updatedAt: new Date(),
-          createdAt: new Date()
+          imageUrl: imageUrl
         })
         .returningAll()
         .execute();

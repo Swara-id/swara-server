@@ -3,7 +3,7 @@ import {
   ColumnType,
   Selectable,
   Insertable,
-  Updateable,
+  Updateable
 } from "kysely";
 
 export interface UsersTable {
@@ -15,8 +15,8 @@ export interface UsersTable {
   about: string;
   profilePicURL: string | null;
 
-  createdAt: ColumnType<Date>;
-  updatedAt: ColumnType<Date>;
+  createdAt: ColumnType<Date, undefined, never>;
+  updatedAt: ColumnType<Date, undefined, undefined>;
 }
 
 export type Users = Selectable<UsersTable>;

@@ -3,15 +3,15 @@ import {
   ColumnType,
   Selectable,
   Insertable,
-  Updateable,
+  Updateable
 } from "kysely";
 
 export interface CorpusTable {
   id: Generated<number>;
   type: "word" | "letter";
   value: string;
-  createdAt: ColumnType<Date>;
-  updatedAt: ColumnType<Date>;
+  createdAt: ColumnType<Date, undefined, never>;
+  updatedAt: ColumnType<Date, undefined, undefined>;
 }
 
 export type Corpus = Selectable<CorpusTable>;

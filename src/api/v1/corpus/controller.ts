@@ -114,7 +114,7 @@ export default class CorpusController extends Controller {
       this.setStatus(200);
 
       return {
-        message,
+        message
       };
     } catch (error) {
       const message =

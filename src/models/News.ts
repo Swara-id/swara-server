@@ -16,8 +16,8 @@ export interface NewsTable {
   newsTypeId: NewsType["id"];
   dateOfEvent: ColumnType<Date>;
   thumbnailUrl: string;
-  createdAt?: ColumnType<Date>;
-  updatedAt?: ColumnType<Date>;
+  createdAt: ColumnType<Date, undefined, never>;
+  updatedAt: ColumnType<Date, undefined, undefined>;
 }
 
 export type News = Selectable<NewsTable>;

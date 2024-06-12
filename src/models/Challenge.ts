@@ -14,8 +14,8 @@ export interface ChallengeTable {
   point: number;
   status: "ongoing" | "completed";
 
-  createdAt: ColumnType<Date>;
-  updatedAt: ColumnType<Date>;
+  createdAt: ColumnType<Date, undefined, never>;
+  updatedAt: ColumnType<Date, undefined, undefined>;
 }
 
 export type Challenge = Selectable<ChallengeTable>;

@@ -17,9 +17,13 @@ import {
   updateOneNewsType
 } from "./service";
 import { ListResponse, TResponse } from "../../../types";
-import { NewsType, NewNewsType, NewsTypeUpdate } from "../../../models/NewsType";
+import {
+  NewsType,
+  NewNewsType,
+  NewsTypeUpdate
+} from "../../../models/NewsType";
 
-@Route("news-types")
+@Route("news-type")
 export default class NewsTypeController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
