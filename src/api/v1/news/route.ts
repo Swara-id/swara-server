@@ -2,7 +2,7 @@ import { multerMid } from "../../../middleware/multer";
 import NewsController from "./controller";
 import { Router } from "express";
 import { TRequest } from "../../../types";
-import { NewNews, NewsUpdate } from "../../../models/News";
+import { NewsBody } from "./types";
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.get("/:id", async (req: TRequest, res) => {
 router.post(
   "/",
   multerMid.single("file"),
-  async (req: TRequest<NewNews>, res) => {
+  async (req: TRequest<NewsBody>, res) => {
     const controller = new NewsController();
 
     const result = await controller.postNews(req.body, req.file);
@@ -34,7 +34,7 @@ router.post(
   }
 );
 
-router.patch("/:id", async (req: TRequest<NewsUpdate>, res) => {
+router.patch("/:id", async (req: TRequest<Partial<NewsBody>>, res) => {
   const controller = new NewsController();
 
   const result = await controller.patchNews(req.params.id, req.body);

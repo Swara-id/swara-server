@@ -17,20 +17,19 @@ import {
   getOneSuggestion,
   deleteOneSuggestion,
   updateOneSuggestion,
-  verificateOneSuggestion
+  verifyOneSuggestion
 } from "./service";
-import { ListResponse, TResponse } from "../../../types";
 import {
-  NewSuggestion,
-  Suggestion,
-  SuggestionUpdate
-} from "../../../models/Suggestion";
+  SuggestionBody,
+  SuggestionListResponse,
+  SuggestionResponse
+} from "./types";
 
 @Route("suggestion")
 export default class SuggestionController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllSuggestion(): Promise<ListResponse<Suggestion>> {
+  public async indexAllSuggestion(): Promise<SuggestionListResponse> {
     try {
       const result = await getAllSuggestion();
       this.setStatus(200);
@@ -48,7 +47,7 @@ export default class SuggestionController extends Controller {
   @Get("{id}")
   public async indexOneSuggestion(
     @Path("id") id: number | string
-  ): Promise<TResponse<Suggestion>> {
+  ): Promise<SuggestionResponse> {
     try {
       const result = await getOneSuggestion(id);
       if (!result) {
@@ -66,9 +65,9 @@ export default class SuggestionController extends Controller {
   @Post()
   @SuccessResponse("201", "Created")
   public async postSuggestion(
-    @FormField() body: NewSuggestion,
+    @FormField() body: SuggestionBody,
     @UploadedFile("file") file?: Express.Multer.File
-  ): Promise<TResponse<Suggestion>> {
+  ): Promise<SuggestionResponse> {
     try {
       const result = await createSuggestion(body, file);
       this.setStatus(201);
@@ -84,8 +83,8 @@ export default class SuggestionController extends Controller {
   @SuccessResponse("200", "Updated")
   public async patchSuggestion(
     @Path("id") id: number | string,
-    @Body() body: SuggestionUpdate
-  ): Promise<TResponse<Suggestion>> {
+    @Body() body: Partial<SuggestionBody>
+  ): Promise<SuggestionResponse> {
     try {
       const result = await updateOneSuggestion(id, body);
       this.setStatus(200);
@@ -103,7 +102,7 @@ export default class SuggestionController extends Controller {
   @SuccessResponse("200", "Deleted")
   public async deleteSuggestion(
     @Path("id") id: number | string
-  ): Promise<TResponse<Suggestion>> {
+  ): Promise<SuggestionResponse> {
     try {
       const result = await deleteOneSuggestion(id);
       this.setStatus(200);
@@ -122,9 +121,9 @@ export default class SuggestionController extends Controller {
   public async verifySuggestion(
     @Path("id") id: number | string,
     @Body() { point }: { point: number }
-  ): Promise<TResponse> {
+  ): Promise<{ message: string }> {
     try {
-      const { message } = await verificateOneSuggestion(id, point);
+      const { message } = await verifyOneSuggestion(id, point);
       this.setStatus(200);
       return {
         message

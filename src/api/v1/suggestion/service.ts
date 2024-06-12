@@ -1,8 +1,8 @@
+import { SuggestionBody } from "./types";
 import path from "path";
 import { v4 as uuid } from "uuid";
 import { db } from "../../../database";
 import { uploadImage, deleteFile } from "../../../helper/helper";
-import { NewSuggestion, SuggestionUpdate } from "../../../models/Suggestion";
 
 export const getAllSuggestion = async () => {
   const result = await db.selectFrom("suggestion").selectAll().execute();
@@ -32,7 +32,7 @@ export const getOneSuggestion = async (id: number | string) => {
 };
 
 export const createSuggestion = async (
-  body: NewSuggestion,
+  body: SuggestionBody,
   file?: Express.Multer.File
 ) => {
   if (!file) {
@@ -114,7 +114,7 @@ export const deleteOneSuggestion = async (id: number | string) => {
 
 export const updateOneSuggestion = async (
   id: number | string,
-  body: SuggestionUpdate
+  body: Partial<SuggestionBody>
 ) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
@@ -144,7 +144,7 @@ export const updateOneSuggestion = async (
   return result;
 };
 
-export const verificateOneSuggestion = async (
+export const verifyOneSuggestion = async (
   id: number | string,
   point: number
 ) => {

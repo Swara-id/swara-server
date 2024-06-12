@@ -30,17 +30,10 @@ export const getOneQuiz = async (id: number | string) => {
     .where("quizId", "=", numericId)
     .execute();
 
-  const formattedChoices = choices.map((choice) => ({
-    ...choice,
-    isCorrect: choice.isCorrect.toString()
-  }));
-
-  const result = {
-    quizResult,
-    choices: formattedChoices
+  return {
+    ...quizResult,
+    choices
   };
-
-  return { result, status: 200 };
 };
 
 export const createQuiz = async (
@@ -78,7 +71,7 @@ export const createQuiz = async (
           imageUrl: imageUrl
         })
         .returningAll()
-        .execute();
+        .executeTakeFirstOrThrow();
 
       return choiceResult;
     });
@@ -87,7 +80,7 @@ export const createQuiz = async (
 
     return {
       ...quizResult,
-      choicesResult
+      choices: choicesResult
     };
   });
 

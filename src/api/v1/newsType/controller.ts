@@ -16,18 +16,13 @@ import {
   deleteOneNewsType,
   updateOneNewsType
 } from "./service";
-import { ListResponse, TResponse } from "../../../types";
-import {
-  NewsType,
-  NewNewsType,
-  NewsTypeUpdate
-} from "../../../models/NewsType";
+import { NewsTypeBody, NewsTypeListResponse, NewsTypeResponse } from "./types";
 
 @Route("news-type")
 export default class NewsTypeController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllNewsTypes(): Promise<ListResponse<NewsType>> {
+  public async indexAllNewsTypes(): Promise<NewsTypeListResponse> {
     try {
       const result = await getAllNewsTypes();
       if (!result || (Array.isArray(result) && result.length === 0)) {
@@ -50,7 +45,7 @@ export default class NewsTypeController extends Controller {
   @SuccessResponse("200", "Success")
   public async indexOneNewsType(
     @Path("id") id: number | string
-  ): Promise<TResponse<NewsType>> {
+  ): Promise<NewsTypeResponse> {
     try {
       const result = await getOneNewsType(id);
       if (!result) {
@@ -76,8 +71,8 @@ export default class NewsTypeController extends Controller {
   @Post()
   @SuccessResponse("201", "Created")
   public async postNewsType(
-    @Body() body: NewNewsType
-  ): Promise<TResponse<NewsType>> {
+    @Body() body: NewsTypeBody
+  ): Promise<NewsTypeResponse> {
     try {
       const result = await createNewsType(body);
       this.setStatus(201);
@@ -100,8 +95,8 @@ export default class NewsTypeController extends Controller {
   @SuccessResponse("200", "Updated")
   public async patchNewsType(
     @Path("id") id: number | string,
-    @Body() body: NewsTypeUpdate
-  ): Promise<TResponse<NewsType>> {
+    @Body() body: Partial<NewsTypeBody>
+  ): Promise<NewsTypeResponse> {
     try {
       const result = await updateOneNewsType(id, body);
       this.setStatus(200);
@@ -124,7 +119,7 @@ export default class NewsTypeController extends Controller {
   @SuccessResponse("200", "Deleted")
   public async deleteNewsType(
     @Path("id") id: number | string
-  ): Promise<TResponse<NewsType>> {
+  ): Promise<NewsTypeResponse> {
     try {
       const result = await deleteOneNewsType(id);
       this.setStatus(200);

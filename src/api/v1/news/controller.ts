@@ -18,14 +18,13 @@ import {
   deleteOneNews,
   updateOneNews
 } from "./service";
-import { ListResponse, TResponse } from "../../../types";
-import { NewNews, News, NewsUpdate } from "../../../models/News";
+import { NewsBody, NewsListResponse, NewsResponse } from "./types";
 
 @Route("news")
 export default class NewsController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllNews(): Promise<ListResponse<News>> {
+  public async indexAllNews(): Promise<NewsListResponse> {
     try {
       const result = await getAllNews();
       if (!result || (Array.isArray(result) && result.length === 0)) {
@@ -48,7 +47,7 @@ export default class NewsController extends Controller {
   @SuccessResponse("200", "Success")
   public async indexOneNews(
     @Path("id") id: number | string
-  ): Promise<TResponse<News>> {
+  ): Promise<NewsResponse> {
     try {
       const result = await getOneNews(id);
       if (!result) {
@@ -74,9 +73,9 @@ export default class NewsController extends Controller {
   @Post()
   @SuccessResponse("201", "Created")
   public async postNews(
-    @FormField() body: NewNews,
+    @FormField() body: NewsBody,
     @UploadedFile("file") file?: Express.Multer.File
-  ): Promise<TResponse<News>> {
+  ): Promise<NewsResponse> {
     try {
       const result = await createNews(body, file);
       this.setStatus(201);
@@ -99,8 +98,8 @@ export default class NewsController extends Controller {
   @SuccessResponse("200", "Updated")
   public async patchNews(
     @Path("id") id: number | string,
-    @Body() body: NewsUpdate
-  ): Promise<TResponse<News>> {
+    @Body() body: Partial<NewsBody>
+  ): Promise<NewsResponse> {
     try {
       const result = await updateOneNews(id, body);
       this.setStatus(200);
@@ -123,7 +122,7 @@ export default class NewsController extends Controller {
   @SuccessResponse("200", "Deleted")
   public async deleteNews(
     @Path("id") id: number | string
-  ): Promise<TResponse<News>> {
+  ): Promise<NewsResponse> {
     try {
       const result = await deleteOneNews(id);
       this.setStatus(200);

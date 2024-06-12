@@ -1,5 +1,5 @@
 import { db } from "../../../database";
-import { NewNewsType, NewsTypeUpdate } from "../../../models/NewsType";
+import { NewsTypeBody } from "./types";
 
 export const getAllNewsTypes = async () => {
   const result = await db.selectFrom("newsType").selectAll().execute();
@@ -23,7 +23,7 @@ export const getOneNewsType = async (id: number | string) => {
   return result;
 };
 
-export const createNewsType = async (body: NewNewsType) => {
+export const createNewsType = async (body: NewsTypeBody) => {
   const result = await db
     .insertInto("newsType")
     .values({
@@ -56,7 +56,7 @@ export const deleteOneNewsType = async (id: number | string) => {
 
 export const updateOneNewsType = async (
   id: number | string,
-  body: NewsTypeUpdate
+  body: Partial<NewsTypeBody>
 ) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
