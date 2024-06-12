@@ -70,9 +70,7 @@ export const createCorpus = async (
       .insertInto("corpus")
       .values({
         type: body.type,
-        value: body.value,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        value: body.value
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -90,8 +88,7 @@ export const createCorpus = async (
         .insertInto("corpusImage")
         .values({
           corpusId: corpusResult.id,
-          imageUrl: imageUrl,
-          createdAt: new Date()
+          imageUrl: imageUrl
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -135,15 +132,18 @@ export const deleteOneCorpus = async (id: number | string) => {
   });
 
   const corpusData = await db.transaction().execute(async (trx) => {
-    await trx.deleteFrom("corpus").where("id", "=", numericId).returningAll().execute();
-
+    await trx
+      .deleteFrom("corpus")
+      .where("id", "=", numericId)
+      .returningAll()
+      .execute();
   });
 
   await Promise.all(deletePromises);
 
   return {
     message: `Corpus with ID ${numericId} and associated files deleted successfully`,
-    data:corpusData,
+    data: corpusData,
     status: 200 // Change status to 200 OK
   };
 };

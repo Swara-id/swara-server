@@ -18,12 +18,19 @@ import {
 } from "./service";
 import { ListResponse, TResponse } from "../../../types";
 import { Challenge } from "../../../models/Challenge";
+import {
+  ChallengePatchBody,
+  ChallengePostBody,
+  ChallengeResult
+} from "./types";
 
 @Route("challenge")
 export default class ChallengeController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllChallenge(): Promise<ListResponse<Partial<Challenge>>> {
+  public async indexAllChallenge(): Promise<
+    ListResponse<Partial<ChallengeResult>>
+  > {
     try {
       const result = await getAllChallenge();
       if (!result || (Array.isArray(result) && result.length === 0)) {
@@ -53,7 +60,7 @@ export default class ChallengeController extends Controller {
   @Get("{id}")
   public async indexOneChallenge(
     @Path("id") id: number | string
-  ): Promise<TResponse<Partial<Challenge>>> {
+  ): Promise<TResponse<Partial<ChallengeResult>>> {
     try {
       const result = await getOneChallenge(id);
       if (!result) {
@@ -78,8 +85,8 @@ export default class ChallengeController extends Controller {
 
   @Post()
   public async postChallenge(
-    @Body() body: Challenge
-  ): Promise<TResponse<Partial<Challenge>>> {
+    @Body() body: ChallengePostBody
+  ): Promise<TResponse<Partial<ChallengeResult>>> {
     try {
       const result = await createChallenge(body);
       this.setStatus(201);
@@ -101,8 +108,8 @@ export default class ChallengeController extends Controller {
   @Patch("{id}")
   public async patchChallenge(
     @Path("id") id: number | string,
-    @Body() body: Challenge
-  ): Promise<TResponse<Partial<Challenge>>> {
+    @Body() body: ChallengePatchBody
+  ): Promise<TResponse<Partial<ChallengeResult>>> {
     try {
       const result = await updateOneChallenge(id, body);
       this.setStatus(201);

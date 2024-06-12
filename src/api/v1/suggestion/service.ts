@@ -39,27 +39,36 @@ export const createSuggestion = async (
     throw { message: "No file uploaded", status: 400 };
   }
 
+  const bucketName = process.env.BUCKET_NAME;
   const randomUUID = uuid();
   const fileExtension = path.extname(file.originalname);
   const fileName = `${randomUUID}${fileExtension}`;
-  const imageUrl = await uploadImage(file, fileName, "suggestion");
+  const predictedUrl = `https://storage.googleapis.com/${bucketName}/suggestion/${fileName}`;
 
-  const result = await db
-    .insertInto("suggestion")
-    .values({
-      uid: randomUUID,
-      attachmentUrl: imageUrl,
-      type: body.type,
-      value: body.value,
-      verificationStatus: "waiting",
-      userId: body.userId,
-      userLocation: body.userLocation,
-      challengeId: body.challengeId
-    })
-    .returningAll()
-    .executeTakeFirst();
+  try {
+    // Attempt to insert the suggestion into the database first
+    const result = await db
+      .insertInto("suggestion")
+      .values({
+        uid: randomUUID,
+        attachmentUrl: predictedUrl,
+        type: body.type,
+        value: body.value,
+        verificationStatus: "waiting",
+        userId: body.userId,
+        userLocation: body.userLocation,
+        challengeId: body.challengeId
+      })
+      .returningAll()
+      .executeTakeFirst();
 
-  return result;
+    await uploadImage(file, fileName, "suggestion");
+
+    return result;
+  } catch (error) {
+    console.error("Error creating suggestion:", error);
+    throw error;
+  }
 };
 
 export const deleteOneSuggestion = async (id: number | string) => {

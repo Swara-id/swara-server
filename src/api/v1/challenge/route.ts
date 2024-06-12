@@ -2,14 +2,15 @@ import { TRequest } from "../../../types";
 import { multerMid } from "./../../../middleware/multer";
 import ChallengeController from "./controller";
 import { Router } from "express";
-import { Challenge } from "../../../models/Challenge";
+import { Challenge, NewChallenge } from "../../../models/Challenge";
+import { ChallengePatchBody } from "./types";
 
 const router = Router();
 
 router.get("/", async (req: TRequest, res) => {
   const controller = new ChallengeController();
 
-  const result = controller.indexAllChallenge();
+  const result = await controller.indexAllChallenge();
 
   res.status(controller.getStatus() ?? 200).json(result);
 });
@@ -25,7 +26,7 @@ router.get("/:id", async (req: TRequest, res) => {
 router.post(
   "/",
   multerMid.single("file"),
-  async (req: TRequest<Challenge>, res) => {
+  async (req: TRequest<NewChallenge>, res) => {
     const controller = new ChallengeController();
 
     const result = await controller.postChallenge(req.body);
@@ -36,7 +37,7 @@ router.post(
 
 router.patch(
   "/:id",
-  async (req: TRequest<Challenge, unknown, { id: string }>, res) => {
+  async (req: TRequest<ChallengePatchBody, unknown, { id: string }>, res) => {
     const controller = new ChallengeController();
 
     const result = await controller.patchChallenge(req.params.id, req.body);

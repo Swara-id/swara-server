@@ -1,7 +1,7 @@
 import NewsTypeController from "./controller";
 import { Router } from "express";
 import { TRequest } from "../../../types";
-import { NewsType, NewNewsType } from "../../../models/NewsType";
+import { NewNewsType, NewsTypeUpdate } from "../../../models/NewsType";
 
 const router = Router();
 
@@ -29,7 +29,7 @@ router.post("/", async (req: TRequest<NewNewsType>, res) => {
   res.status(controller.getStatus() ?? 201).json(result);
 });
 
-router.patch("/:id", async (req: TRequest<Partial<NewsType>>, res) => {
+router.patch("/:id", async (req: TRequest<Partial<NewsTypeUpdate>>, res) => {
   const controller = new NewsTypeController();
 
   const result = await controller.patchNewsType(req.params.id, req.body);

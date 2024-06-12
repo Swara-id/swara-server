@@ -19,8 +19,8 @@ export interface SuggestionTable {
   challengeId: null | Challenge["id"];
   userId: Users["id"];
   userLocation: string | null;
-  createdAt?: ColumnType<Date>;
-  updatedAt?: ColumnType<Date>;
+  createdAt: ColumnType<Date, undefined, never>;
+  updatedAt: ColumnType<Date, undefined, undefined>;
 }
 
 export type Suggestion = Selectable<SuggestionTable>;

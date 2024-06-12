@@ -74,6 +74,7 @@ export default class SuggestionController extends Controller {
       this.setStatus(201);
       return { message: "create suggestion success", data: result };
     } catch (error) {
+      console.log(error);
       this.setStatus(500);
       return { message: "An error occurred while creating the Suggestion" };
     }

@@ -5,7 +5,7 @@ export interface CorpusImageTable {
   imageUrl: string;
   corpusId: Corpus["id"];
 
-  createdAt: ColumnType<Date>;
+  createdAt: ColumnType<Date, undefined, never>;
 }
 
 export type CorpusImage = Selectable<CorpusImageTable>;

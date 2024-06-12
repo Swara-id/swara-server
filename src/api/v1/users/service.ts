@@ -35,10 +35,7 @@ export const createUser = async (req: Request) => {
       userName: body.userName,
       gender: body.gender,
       about: body.about,
-      profilePicURL: body.profilePicURL,
-
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      profilePicURL: body.profilePicURL
     })
     .returningAll()
     .executeTakeFirst();
@@ -78,9 +75,7 @@ export const updateOneUser = async (req: Request) => {
       userName: body.userName,
       gender: body.gender,
       about: body.about,
-      profilePicURL: body.profilePicURL,
-
-      updatedAt: new Date(),
+      profilePicURL: body.profilePicURL
     })
     .where("id", "=", numericId)
     .returningAll()

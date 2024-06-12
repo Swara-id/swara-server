@@ -18,8 +18,8 @@ export interface PointsTable {
   suggestionId: Suggestion["id"] | null;
   points: number;
 
-  createdAt?: ColumnType<Date>;
-  updatedAt?: ColumnType<Date>;
+  createdAt: ColumnType<Date, undefined, never>;
+  updatedAt: ColumnType<Date, undefined, undefined>;
 }
 
 export type Points = Selectable<PointsTable>;

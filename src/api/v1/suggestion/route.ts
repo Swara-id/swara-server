@@ -2,7 +2,7 @@ import { multerMid } from "../../../middleware/multer";
 import SuggestionController from "./controller";
 import { Router } from "express";
 import { TRequest } from "../../../types";
-import { Suggestion } from "../../../models/Suggestion";
+import { NewSuggestion, SuggestionUpdate } from "../../../models/Suggestion";
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.get("/:id", async (req: TRequest, res) => {
 router.post(
   "/",
   multerMid.single("file"),
-  async (req: TRequest<Suggestion>, res) => {
+  async (req: TRequest<NewSuggestion>, res) => {
     const controller = new SuggestionController();
 
     const result = await controller.postSuggestion(req.body, req.file);
@@ -34,7 +34,7 @@ router.post(
   }
 );
 
-router.patch("/:id", async (req: TRequest<Suggestion>, res) => {
+router.patch("/:id", async (req: TRequest<SuggestionUpdate>, res) => {
   const controller = new SuggestionController();
 
   const result = await controller.patchSuggestion(req.params.id, req.body);

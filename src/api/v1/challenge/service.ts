@@ -1,5 +1,5 @@
 import { db } from "../../../database";
-import { Challenge, NewChallenge } from "../../../models/Challenge";
+import { ChallengePatchBody, ChallengePostBody } from "./types";
 
 export const getAllChallenge = async () => {
   const result = await db.selectFrom("challenge").selectAll().execute();
@@ -21,7 +21,7 @@ export const getOneChallenge = async (id: number | string) => {
   return result;
 };
 
-export const createChallenge = async (body: NewChallenge) => {
+export const createChallenge = async (body: ChallengePostBody) => {
   const result = await db
     .insertInto("challenge")
     .values({
@@ -29,10 +29,7 @@ export const createChallenge = async (body: NewChallenge) => {
       type: body.type,
       value: body.value,
       status: "ongoing",
-      point: body.point,
-
-      updatedAt: new Date(),
-      createdAt: new Date()
+      point: body.point
     })
     .returningAll()
     .executeTakeFirst();
@@ -58,7 +55,7 @@ export const deleteOneChallenge = async (id: number | string) => {
 
 export const updateOneChallenge = async (
   id: number | string,
-  body: Challenge
+  body: ChallengePatchBody
 ) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {
@@ -67,13 +64,10 @@ export const updateOneChallenge = async (
   const result = await db
     .updateTable("challenge")
     .set({
-      uid: body.uid,
       type: body.type,
       value: body.value,
       status: body.status,
-      point: body.point,
-
-      updatedAt: new Date()
+      point: body.point
     })
     .where("id", "=", numericId)
     .returningAll()

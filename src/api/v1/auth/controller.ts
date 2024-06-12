@@ -1,3 +1,4 @@
+import { TUser } from "./types";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -22,9 +23,9 @@ export default class UserController extends Controller {
   public async registerUser(
     @Body()
     { email, password }: { email: string; password: string }
-  ): Promise<{ message: string }> {
+  ): Promise<{ message: string; user?: TUser; token?: string }> {
     if (!email || !password) {
-      this.setStatus(422);
+      this.setStatus(400);
       return { message: "Email and password are required" };
     }
 
@@ -37,11 +38,19 @@ export default class UserController extends Controller {
         return { message: "User is not authenticated" };
       }
 
+      const token = await user.getIdToken();
       const res = sendEmailVerification(user)
         .then(() => {
           this.setStatus(201);
           return {
-            message: "Verification email sent! User created successfully!"
+            message: "Verification email sent! User created successfully!",
+            user: {
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL
+            },
+            token
           };
         })
         .catch((_error) => {
@@ -65,9 +74,10 @@ export default class UserController extends Controller {
   @Post("login")
   public async loginUser(
     @Body() { email, password }: { email: string; password: string }
-  ): Promise<{ message: string; token?: string }> {
+  ): Promise<{ message: string; token?: string; user?: TUser }> {
     if (!email || !password) {
       this.setStatus(422);
+
       return { message: "Email and password are required" };
     }
 
@@ -76,7 +86,16 @@ export default class UserController extends Controller {
       const token = await cred.user.getIdToken();
 
       this.setStatus(201);
-      return { message: "User logged in successfully", token };
+      return {
+        user: {
+          uid: cred.user.uid,
+          displayName: cred.user.displayName,
+          email: cred.user.email,
+          photoURL: cred.user.photoURL
+        },
+        message: "User logged in successfully",
+        token
+      };
     } catch (error) {
       const errorMessage =
         error instanceof Error
