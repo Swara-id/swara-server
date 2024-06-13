@@ -14,6 +14,9 @@ import eventTypeRouter from "./api/v1/newsType/route";
 import challengeTypeRouter from "./api/v1/challenge/route";
 import authRouter from "./api/v1/auth/route";
 
+import { notFoundHandler } from "./middleware/notFoundHandler";
+import { errorHandler } from "./middleware/errorHandler";
+
 const app = express();
 const port = process.env.PORT || 3000;
 const route = "api/v1";
@@ -52,6 +55,9 @@ app.use(`/${route}/challenge`, challengeTypeRouter);
 app.use(`/${route}/suggestion`, suggestionRouter);
 
 app.use(`/${route}/auth`, authRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

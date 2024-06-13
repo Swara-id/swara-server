@@ -1,34 +1,28 @@
-import { ErrorRequestHandler } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "../constant/httpStatus";
+import { CustomAPIError } from "../error/custom-api-error";
 
-const errorHandler: ErrorRequestHandler = (err, req, res) => {
+export const errorHandler = (
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
   let customError = {
-    statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
-    message: err.message || "Something went wrong"
+    message: "Something went wrong",
+    statusCode: StatusCodes.INTERNAL_SERVER_ERROR
   };
 
-  if (err.name === "ValidationError") {
-    customError.statusCode = StatusCodes.BAD_REQUEST;
-  }
-
-  if (err.code && err.code === 11000) {
+  if (err instanceof CustomAPIError) {
     customError = {
-      message: "Duplicate field value entered",
-      statusCode: StatusCodes.BAD_REQUEST
+      message: err.message,
+      statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR
     };
   }
 
-  if (err.name === "CastError") {
-    customError = {
-      message: `Resource not found: ${err.value}`,
-      statusCode: StatusCodes.NOT_FOUND
-    };
-  }
+  console.error(err.stack);
 
-  return res.status(customError.statusCode).json({
-    message: customError.message,
-    statusCode: customError.statusCode
-  });
+  return res
+    .status(customError.statusCode)
+    .json({ message: customError.message });
 };
-
-export default errorHandler;
