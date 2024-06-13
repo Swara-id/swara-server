@@ -41,7 +41,7 @@
     "prebuild": "npm run swagger",
     "dev": "concurrently \"npm run swagger\" \"nodemon -r tsconfig-paths/register ./src/index.ts\"",
     "build": "tsc",
-    "swagger": "tsoa spec --basePath /api/v1",
+    "swagger": "tsoa spec",
     "lint": "npx eslint",
     "lint:fix": "npx eslint --fix",
     "lint:strict": "npx eslint '*/**/*.{js,ts}'",

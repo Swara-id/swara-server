@@ -11,6 +11,24 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
+    },
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "basePath": "/api/v1",
+    "spec": {
+      "servers": [
+        {
+          "url": "http://localhost:5000/api/v1",
+          "description": "Local server"
+        },
+        {
+          "url": "https://swara-dev-425202.et.r.appspot.com/api/v1",
+          "description": "Development server"
+        }
+      ]
     }
   },
   "routes": {
