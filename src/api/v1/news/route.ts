@@ -2,24 +2,30 @@ import { multerMid } from "../../../middleware/multer";
 import NewsController from "./controller";
 import { Router } from "express";
 import { TRequest } from "../../../types";
-import { NewsBody } from "./types";
+import { NewsBody, NewsQuery } from "./types";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
-  const controller = new NewsController();
+router.get("/", async (req: TRequest<unknown, NewsQuery>, res, next) => {
+  try {
+    const controller = new NewsController();
+    const result = await controller.indexAllNews(req.query);
 
-  const result = await controller.indexAllNews();
-
-  res.status(controller.getStatus() ?? 200).json(result);
+    res.status(controller.getStatus() ?? 200).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get("/:id", async (req: TRequest, res) => {
-  const controller = new NewsController();
+router.get("/:id", async (req: TRequest, res, next) => {
+  try {
+    const controller = new NewsController();
+    const result = await controller.indexOneNews(req.params.id);
 
-  const result = await controller.indexOneNews(req.params.id);
-
-  res.status(controller.getStatus() ?? 200).json(result);
+    res.status(controller.getStatus() ?? 200).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post(

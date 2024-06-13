@@ -7,6 +7,7 @@ import {
   Patch,
   Path,
   Post,
+  Queries,
   Route,
   SuccessResponse,
   UploadedFile
@@ -18,29 +19,21 @@ import {
   deleteOneNews,
   updateOneNews
 } from "./service";
-import { NewsBody, NewsListResponse, NewsResponse } from "./types";
+import { NewsBody, NewsListResponse, NewsQuery, NewsResponse } from "./types";
 
 @Route("news")
 export default class NewsController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllNews(): Promise<NewsListResponse> {
-    try {
-      const result = await getAllNews();
-      if (!result || (Array.isArray(result) && result.length === 0)) {
-        this.setStatus(404);
-        throw { message: "No News found", status: 404 };
-      }
-      this.setStatus(200);
-      return { message: "success", data: result, pagination: {} };
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "An error occurred while fetching News";
-      this.setStatus(500);
-      return { message, data: [], pagination: {} };
-    }
+  public async indexAllNews(
+    @Queries() query: NewsQuery
+  ): Promise<NewsListResponse> {
+    const result = await getAllNews(query);
+    this.setStatus(200);
+    return {
+      message: "success",
+      ...result
+    };
   }
 
   @Get("{id}")
@@ -48,26 +41,9 @@ export default class NewsController extends Controller {
   public async indexOneNews(
     @Path("id") id: number | string
   ): Promise<NewsResponse> {
-    try {
-      const result = await getOneNews(id);
-      if (!result) {
-        this.setStatus(404);
-        return { message: `No News found with ID ${id}` };
-      }
-      this.setStatus(200);
-      return { message: "success", data: result };
-    } catch (error) {
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? (error.message as string)
-          : "An error occurred while fetching News";
-      const status =
-        error && typeof error === "object" && "status" in error
-          ? (error.status as number)
-          : 500;
-      this.setStatus(status);
-      return { message };
-    }
+    const result = await getOneNews(id);
+    this.setStatus(200);
+    return { message: "success", data: result };
   }
 
   @Post()
