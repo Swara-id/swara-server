@@ -19,7 +19,6 @@ import {
 import { NewsTypeBody, NewsTypeListResponse, NewsTypeResponse } from "./types";
 
 @Route("news-type")
-@Route("news-type")
 export default class NewsTypeController extends Controller {
   @Get("/")
   @SuccessResponse("200", "Success")
