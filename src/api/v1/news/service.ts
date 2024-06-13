@@ -10,7 +10,12 @@ export const getAllNews = async (query: NewsQuery) => {
   let countQb = db.selectFrom("news").select(db.fn.count("id").as("count"));
 
   if (query.search) {
-    countQb = countQb.where("title", "like", `%${query.search}%`);
+    const lowerSearch = query.search.toLowerCase();
+    countQb = countQb.where(
+      db.fn("lower", ["title"]),
+      "like",
+      `%${lowerSearch}%`
+    );
   }
   if (query.newsTypeId) {
     countQb = countQb.where("newsTypeId", "=", query.newsTypeId);
@@ -36,7 +41,8 @@ export const getAllNews = async (query: NewsQuery) => {
 
   let qb = db.selectFrom("news").selectAll();
   if (query.search) {
-    qb = qb.where("title", "like", `%${query.search}%`);
+    const lowerSearch = query.search.toLowerCase();
+    qb = qb.where(db.fn("lower", ["title"]), "like", `%${lowerSearch}%`);
   }
   if (query.newsTypeId) {
     qb = qb.where("newsTypeId", "=", query.newsTypeId);
