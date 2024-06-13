@@ -7,24 +7,22 @@ import { NotFoundError } from "../../../error/not-found";
 import { BadRequestError } from "../../../error/bad-request";
 
 export const getAllNews = async (query: NewsQuery) => {
-  const countQueryBuilder = db
-    .selectFrom("news")
-    .select(db.fn.count("id").as("count"));
+  let countQb = db.selectFrom("news").select(db.fn.count("id").as("count"));
 
   if (query.search) {
-    countQueryBuilder.where("title", "like", `%${query.search}%`);
+    countQb = countQb.where("title", "like", `%${query.search}%`);
   }
   if (query.newsTypeId) {
-    countQueryBuilder.where("newsTypeId", "=", query.newsTypeId);
+    countQb = countQb.where("newsTypeId", "=", query.newsTypeId);
   }
   if (query.dateOfEvent) {
-    countQueryBuilder.where("dateOfEvent", "=", query.dateOfEvent);
+    countQb = countQb.where("dateOfEvent", "=", query.dateOfEvent);
   }
 
-  const total = await countQueryBuilder.execute();
-  const totalData = total[0]?.count;
+  const total = await countQb.execute();
+  const totalData = Number(total[0]?.count ?? 0);
 
-  if (!totalData) {
+  if (totalData === 0) {
     return {
       data: [],
       pagination: {
@@ -36,18 +34,18 @@ export const getAllNews = async (query: NewsQuery) => {
     };
   }
 
-  const queryBuilder = db.selectFrom("news").selectAll();
+  let qb = db.selectFrom("news").selectAll();
   if (query.search) {
-    queryBuilder.where("title", "like", `%${query.search}%`);
+    qb = qb.where("title", "like", `%${query.search}%`);
   }
   if (query.newsTypeId) {
-    queryBuilder.where("newsTypeId", "=", query.newsTypeId);
+    qb = qb.where("newsTypeId", "=", query.newsTypeId);
   }
   if (query.dateOfEvent) {
-    queryBuilder.where("dateOfEvent", "=", query.dateOfEvent);
+    qb = qb.where("dateOfEvent", "=", query.dateOfEvent);
   }
 
-  const result = await queryBuilder
+  const result = await qb
     .orderBy("dateOfEvent", query.order)
     .limit(query.pageSize)
     .offset((query.page - 1) * query.pageSize)
@@ -58,8 +56,8 @@ export const getAllNews = async (query: NewsQuery) => {
     pagination: {
       page: Number(query.page),
       pageSize: Number(query.pageSize),
-      totalData: total.length,
-      totalPage: Math.ceil(total.length / query.pageSize)
+      totalData,
+      totalPage: Math.ceil(totalData / query.pageSize)
     }
   };
 };
