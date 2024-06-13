@@ -2,7 +2,6 @@ import NewsTypeController from "./controller";
 import { Router } from "express";
 import { TRequest } from "../../../types";
 import { NewsTypeBody } from "./types";
-import { NewsTypeBody } from "./types";
 
 const router = Router();
 
