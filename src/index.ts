@@ -4,6 +4,7 @@ import "./config/firebase-config";
 import express, { Request, Response, urlencoded } from "express";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
+import cors from "cors";
 
 import corpusRouter from "./api/v1/corpus/route";
 import usersRouter from "./api/v1/users/route";
@@ -21,6 +22,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const route = "api/v1";
 
+app.use(cors());
 app.use(
   urlencoded({
     extended: true
