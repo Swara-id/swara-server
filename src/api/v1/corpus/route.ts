@@ -22,7 +22,8 @@ router.post(
   multerMid.array("file"),
   async (req: TRequest<CorpusBody>, res) => {
     const result = await controller.postCorpus(
-      req.body,
+      req.body.type,
+      req.body.value,
       req.files as Express.Multer.File[]
     );
     res.status(controller.getStatus() ?? 201).json(result);

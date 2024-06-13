@@ -106,6 +106,7 @@ export const createCorpus = async (
 
   return transaction;
 };
+
 export const deleteOneCorpus = async (id: number | string) => {
   const numericId = Number(id);
   if (isNaN(numericId)) {

@@ -15,7 +15,7 @@ import {
   getOneCorpus,
   deleteOneCorpus
 } from "./service";
-import { CorpusBody, CorpusResult, CorpusGet } from "./types";
+import { CorpusResult, CorpusGet } from "./types";
 import { ListResponse, TResponse } from "../../../types";
 
 @Route("corpus")
@@ -80,15 +80,17 @@ export default class CorpusController extends Controller {
 
   @Post()
   public async postCorpus(
-    @FormField() body: CorpusBody,
-    @UploadedFiles() files?: Express.Multer.File[]
+    @FormField() type: "word" | "letter",
+    @FormField() value: string,
+    @UploadedFiles() file?: Express.Multer.File[]
   ): Promise<TResponse<Partial<CorpusGet>>> {
+    const body = { type, value };
     try {
-      if (!files || files.length === 0) {
+      if (!file || file.length === 0) {
         this.setStatus(400);
         throw { message: "No file uploaded" };
       }
-      const result = await createCorpus(body, files);
+      const result = await createCorpus(body, file);
       this.setStatus(201);
       return { message: "Create corpus success", data: result };
     } catch (error) {
