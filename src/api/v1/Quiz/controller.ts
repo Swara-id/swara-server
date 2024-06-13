@@ -5,7 +5,6 @@ import {
   Get,
   Path,
   Post,
-  Queries,
   Route,
   SuccessResponse,
   UploadedFiles
@@ -76,7 +75,7 @@ export default class QuizController extends Controller {
   @Post()
   public async postQuiz(
     @FormField() question: string,
-    @Queries() choices: ChoiceBody[],
+    @FormField() choices: ChoiceBody[],
     @UploadedFiles() files?: Express.Multer.File[]
   ): Promise<QuizResponse> {
     try {
