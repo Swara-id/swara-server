@@ -5,7 +5,6 @@ export interface NewsResult {
   uid: string;
   title: string;
   description: string;
-  userUid: string;
   newsTypeId: number;
   dateOfEvent: Date;
   thumbnailUrl: string;
@@ -17,7 +16,6 @@ export interface NewsListResponse extends ListResponse<NewsResult> {}
 export interface NewsBody {
   title: string;
   description: string;
-  userUid: string;
   newsTypeId: number;
   dateOfEvent: Date;
 }

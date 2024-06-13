@@ -28,7 +28,14 @@ router.post(
   async (req: TRequest<SuggestionBody>, res) => {
     const controller = new SuggestionController();
 
-    const result = await controller.postSuggestion(req.body, req.file);
+    const result = await controller.postSuggestion(
+      req.body.type,
+      req.body.value,
+      req.body.userId,
+      req.body.challengeId,
+      req.body.userLocation,
+      req.file
+    );
 
     res.status(controller.getStatus() ?? 201).json(result);
   }

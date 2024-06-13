@@ -5,12 +5,13 @@ import {
   Get,
   Path,
   Post,
+  Queries,
   Route,
   SuccessResponse,
   UploadedFiles
 } from "tsoa";
 import { getAllQuiz, createQuiz, getOneQuiz, deleteOneQuiz } from "./service";
-import { QuizBody, QuizListResponse, QuizResponse } from "./types";
+import { ChoiceBody, QuizListResponse, QuizResponse } from "./types";
 
 @Route("quiz")
 export default class QuizController extends Controller {
@@ -74,7 +75,8 @@ export default class QuizController extends Controller {
 
   @Post()
   public async postQuiz(
-    @FormField() body: QuizBody,
+    @FormField() question: string,
+    @Queries() choices: ChoiceBody[],
     @UploadedFiles() files?: Express.Multer.File[]
   ): Promise<QuizResponse> {
     try {
@@ -82,7 +84,7 @@ export default class QuizController extends Controller {
         this.setStatus(400);
         throw { message: "No file uploaded" };
       }
-      const result = await createQuiz(body, files);
+      const result = await createQuiz({ question, choices }, files);
       this.setStatus(201);
       return { message: "Create Quiz success", data: result };
     } catch (error) {

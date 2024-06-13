@@ -22,7 +22,8 @@ router.post(
   multerMid.array("file"),
   async (req: TRequest<QuizBody>, res) => {
     const result = await controller.postQuiz(
-      req.body,
+      req.body.question,
+      req.body.choices,
       req.files as Express.Multer.File[]
     );
     res.status(controller.getStatus() ?? 201).json(result);

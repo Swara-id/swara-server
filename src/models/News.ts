@@ -12,7 +12,6 @@ export interface NewsTable {
   uid: string;
   title: string;
   description: string;
-  userUid: string;
   newsTypeId: NewsType["id"];
   dateOfEvent: ColumnType<Date>;
   thumbnailUrl: string;

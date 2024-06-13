@@ -61,15 +61,21 @@ export default class SuggestionController extends Controller {
       return { message: "An error occurred while fetching the Suggestion" };
     }
   }
-
   @Post()
   @SuccessResponse("201", "Created")
   public async postSuggestion(
-    @FormField() body: SuggestionBody,
+    @FormField() type: "word" | "letter",
+    @FormField() value: string,
+    @FormField() userId: number,
+    @FormField() challengeId?: number,
+    @FormField() userLocation?: string,
     @UploadedFile("file") file?: Express.Multer.File
   ): Promise<SuggestionResponse> {
     try {
-      const result = await createSuggestion(body, file);
+      const result = await createSuggestion(
+        { type, value, userId, challengeId, userLocation },
+        file
+      );
       this.setStatus(201);
       return { message: "create suggestion success", data: result };
     } catch (error) {
