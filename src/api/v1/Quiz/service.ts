@@ -67,7 +67,7 @@ export const createQuiz = async (
         .values({
           value: body.choices[index].value,
           quizId: quizResult.id,
-          isCorrect: JSON.parse(body.choices[index].isCorrect),
+          isCorrect: body.choices[index].isCorrect,
           imageUrl: imageUrl
         })
         .returningAll()

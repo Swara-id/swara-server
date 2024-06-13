@@ -15,14 +15,11 @@ export interface SuggestionResult {
 }
 
 export interface SuggestionBody {
-  uid: string;
   type: "word" | "letter";
   value: string;
-  verificationStatus: "approved" | "rejected" | "waiting";
-  attachmentUrl: string;
-  challengeId: number;
+  challengeId?: number;
   userId: number;
-  userLocation: string | null;
+  userLocation?: string;
 }
 
 export interface SuggestionResponse extends TResponse<SuggestionResult> {}

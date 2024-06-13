@@ -45,7 +45,6 @@ export const createNews = async (
       uid: randomUUID,
       title: body.title,
       description: body.description,
-      userUid: body.userUid,
       newsTypeId: body.newsTypeId,
       dateOfEvent: body.dateOfEvent,
       thumbnailUrl: imageUrl
@@ -98,7 +97,6 @@ export const updateOneNews = async (
     .updateTable("news")
     .set({
       description: body.description,
-      userUid: body.userUid,
       newsTypeId: body.newsTypeId,
       dateOfEvent: body.dateOfEvent
     })

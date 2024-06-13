@@ -73,11 +73,18 @@ export default class NewsController extends Controller {
   @Post()
   @SuccessResponse("201", "Created")
   public async postNews(
-    @FormField() body: NewsBody,
+    @FormField() title: string,
+    @FormField() description: string,
+    @FormField() newsTypeId: number,
+    @FormField() dateOfEvent: Date,
+
     @UploadedFile("file") file?: Express.Multer.File
   ): Promise<NewsResponse> {
     try {
-      const result = await createNews(body, file);
+      const result = await createNews(
+        { title, description, newsTypeId, dateOfEvent },
+        file
+      );
       this.setStatus(201);
       return { message: "create news success", data: result };
     } catch (error) {

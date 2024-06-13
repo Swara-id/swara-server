@@ -28,7 +28,13 @@ router.post(
   async (req: TRequest<NewsBody>, res) => {
     const controller = new NewsController();
 
-    const result = await controller.postNews(req.body, req.file);
+    const result = await controller.postNews(
+      req.body.title,
+      req.body.description,
+      req.body.newsTypeId,
+      req.body.dateOfEvent,
+      req.file
+    );
 
     res.status(controller.getStatus() ?? 201).json(result);
   }

@@ -28,5 +28,5 @@ export interface QuizBody {
 
 export interface ChoiceBody {
   value: string;
-  isCorrect: string;
+  isCorrect: boolean;
 }

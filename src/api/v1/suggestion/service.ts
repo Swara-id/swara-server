@@ -124,7 +124,6 @@ export const updateOneSuggestion = async (
   const result = await db
     .updateTable("suggestion")
     .set({
-      attachmentUrl: body.attachmentUrl,
       type: body.type,
       value: body.value,
       verificationStatus: "waiting",
