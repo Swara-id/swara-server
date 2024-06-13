@@ -7,6 +7,7 @@ import {
   Path,
   Post,
   Route,
+  Security,
   SuccessResponse
 } from "tsoa";
 import {
@@ -40,6 +41,7 @@ export default class NewsTypeController extends Controller {
   }
 
   @Post()
+  @Security("access_token")
   @SuccessResponse("201", "Created")
   public async postNewsType(
     @Body() body: NewsTypeBody
