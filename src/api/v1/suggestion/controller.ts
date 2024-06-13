@@ -9,7 +9,8 @@ import {
   Patch,
   Route,
   SuccessResponse,
-  UploadedFile
+  UploadedFile,
+  Security
 } from "tsoa";
 import {
   getAllSuggestion,
@@ -62,27 +63,21 @@ export default class SuggestionController extends Controller {
     }
   }
   @Post()
+  @Security("access_token")
   @SuccessResponse("201", "Created")
   public async postSuggestion(
-    @FormField() type: "word" | "letter",
     @FormField() value: string,
-    @FormField() userId: number,
+    @FormField() userUid: string,
     @FormField() challengeId?: number,
     @FormField() userLocation?: string,
     @UploadedFile("file") file?: Express.Multer.File
   ): Promise<SuggestionResponse> {
-    try {
-      const result = await createSuggestion(
-        { type, value, userId, challengeId, userLocation },
-        file
-      );
-      this.setStatus(201);
-      return { message: "create suggestion success", data: result };
-    } catch (error) {
-      console.log(error);
-      this.setStatus(500);
-      return { message: "An error occurred while creating the Suggestion" };
-    }
+    const result = await createSuggestion(
+      { value, userUid, challengeId, userLocation },
+      file
+    );
+    this.setStatus(201);
+    return { message: "create suggestion success", data: result };
   }
 
   @Patch("{id}")

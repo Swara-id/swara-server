@@ -20,9 +20,7 @@ export const errorHandler = (
     };
   }
 
-  console.error(err.stack);
-
   return res
     .status(customError.statusCode)
-    .json({ message: customError.message });
+    .json({ message: customError.message, error: err.stack?.split("\n")[0] });
 };

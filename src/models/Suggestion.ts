@@ -12,12 +12,11 @@ import {
 export interface SuggestionTable {
   id: Generated<number>;
   uid: string;
-  type: "word" | "letter";
   value: string;
   verificationStatus: "approved" | "rejected" | "waiting";
   attachmentUrl: string;
   challengeId: null | Challenge["id"];
-  userId: Users["id"];
+  userUid: Users["uid"];
   userLocation: string | null;
   createdAt: ColumnType<Date, undefined, never>;
   updatedAt: ColumnType<Date, undefined, undefined>;

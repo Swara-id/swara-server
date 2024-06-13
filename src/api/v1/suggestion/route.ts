@@ -1,3 +1,4 @@
+import { UnauthenticatedError } from "./../../../error/unauthenticated";
 import { multerMid } from "../../../middleware/multer";
 import SuggestionController from "./controller";
 import { Router } from "express";
@@ -25,19 +26,25 @@ router.get("/:id", async (req: TRequest, res) => {
 router.post(
   "/",
   multerMid.single("file"),
-  async (req: TRequest<SuggestionBody>, res) => {
-    const controller = new SuggestionController();
+  async (req: TRequest<SuggestionBody>, res, next) => {
+    try {
+      if (!req.user) {
+        throw new UnauthenticatedError("You are not authenticated");
+      }
 
-    const result = await controller.postSuggestion(
-      req.body.type,
-      req.body.value,
-      req.body.userId,
-      req.body.challengeId,
-      req.body.userLocation,
-      req.file
-    );
+      const controller = new SuggestionController();
 
-    res.status(controller.getStatus() ?? 201).json(result);
+      const result = await controller.postSuggestion(
+        req.body.value,
+        req.user.uid,
+        req.body.challengeId,
+        req.body.userLocation,
+        req.file
+      );
+      res.status(controller.getStatus() ?? 201).json(result);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 

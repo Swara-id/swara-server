@@ -1,3 +1,6 @@
-import { User } from "firebase/auth";
-
-export type TUser = Pick<User, "uid" | "displayName" | "email" | "photoURL">;
+export interface RegisterBody {
+  email: string;
+  password: string;
+  fullName: string;
+  userName: string;
+}

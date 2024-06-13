@@ -11,9 +11,11 @@ export interface UsersTable {
   uid: string;
   fullName: string;
   userName: string;
-  gender: "male" | "female";
+  email: string;
+  gender: "male" | "female" | "not-set";
   about: string;
-  profilePicURL: string | null;
+  profilePicURL: string;
+  points: ColumnType<number, undefined, number>;
 
   createdAt: ColumnType<Date, undefined, never>;
   updatedAt: ColumnType<Date, undefined, undefined>;

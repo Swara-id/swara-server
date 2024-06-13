@@ -29,6 +29,7 @@ export interface CustomError {
 }
 
 import * as core from "express-serve-static-core";
+import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 
 export interface Query extends core.Query {}
 
@@ -38,7 +39,9 @@ export interface TRequest<
   ReqBody = unknown,
   ReqQuery = Query,
   Params extends URLParams = core.ParamsDictionary
-> extends Request<Params, unknown, ReqBody, ReqQuery> {}
+> extends Request<Params, unknown, ReqBody, ReqQuery> {
+  user?: DecodedIdToken;
+}
 
 export interface TResponse<T = undefined> {
   message: string;

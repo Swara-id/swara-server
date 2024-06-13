@@ -12,7 +12,7 @@ import { Users } from "./Users";
 export interface PointsTable {
   id: Generated<number>;
   desc: string;
-  userId: Users["id"];
+  userUid: Users["uid"];
   source: "quiz" | "suggestion" | "challenge";
   quizId: null | Quiz["id"];
   suggestionId: Suggestion["id"] | null;

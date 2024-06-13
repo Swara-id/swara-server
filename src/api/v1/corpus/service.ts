@@ -4,7 +4,6 @@ import path from "path";
 import { deleteFile, uploadImage } from "../../../helper/helper";
 
 export const getAllCorpus = async () => {
-  console.log("masuk");
   const result = await db.selectFrom("corpus").selectAll().execute();
   return result;
 };

@@ -1,48 +1,44 @@
 import { Request } from "express";
-import { db } from "../../../database";
+import { TUser } from "./types";
+import { db } from "./../../../database";
+import { NotFoundError } from "../../../error/not-found";
 
-export const getAllUser = async (req: Request) => {
-  console.log(req);
+export const getAllUser = async () => {
   const result = await db.selectFrom("users").selectAll().execute();
   return result;
 };
 
-export const getOneUser = async (req: Request) => {
-  const { id } = req.params;
-  const numericId = Number(id);
-  if (isNaN(numericId)) {
-    throw { message: "Invalid ID parameter", status: 400 };
-  }
-
+export const getOneUser = async (uid: string) => {
   const result = await db
     .selectFrom("users")
     .selectAll()
-    .where("id", "=", numericId)
+    .where("uid", "=", uid)
     .executeTakeFirst();
+
   if (!result) {
-    throw { message: `No corpus found with ID ${numericId}`, status: 404 };
+    throw new NotFoundError(`No news type found with UID ${uid}`);
   }
-  return { result, status: 200 };
+
+  return result;
 };
 
-export const createUser = async (req: Request) => {
-  const { body } = req;
+export const createUser = async (user: TUser) => {
   const result = await db
     .insertInto("users")
     .values({
-      uid: body.uid,
-      fullName: body.fullName,
-      userName: body.userName,
-      gender: body.gender,
-      about: body.about,
-      profilePicURL: body.profilePicURL
+      uid: user.uid,
+      fullName: user.displayName || "",
+      userName: user.displayName || "",
+      about: "",
+      email: user.email || "",
+      profilePicURL: user.photoURL ? user.photoURL : "",
+      gender: "not-set"
     })
     .returningAll()
     .executeTakeFirst();
 
   return result;
 };
-
 export const deleteOneUser = async (req: Request) => {
   const { id } = req.params;
   const numericId = Number(id);

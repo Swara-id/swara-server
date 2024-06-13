@@ -3,6 +3,7 @@ import path from "path";
 import { v4 as uuid } from "uuid";
 import { db } from "../../../database";
 import { uploadImage, deleteFile } from "../../../helper/helper";
+import { BadRequestError } from "../../../error/bad-request";
 
 export const getAllSuggestion = async () => {
   const result = await db.selectFrom("suggestion").selectAll().execute();
@@ -36,7 +37,7 @@ export const createSuggestion = async (
   file?: Express.Multer.File
 ) => {
   if (!file) {
-    throw { message: "No file uploaded", status: 400 };
+    throw new BadRequestError("No file found");
   }
 
   const bucketName = process.env.BUCKET_NAME;
@@ -45,30 +46,23 @@ export const createSuggestion = async (
   const fileName = `${randomUUID}${fileExtension}`;
   const predictedUrl = `https://storage.googleapis.com/${bucketName}/suggestion/${fileName}`;
 
-  try {
-    // Attempt to insert the suggestion into the database first
-    const result = await db
-      .insertInto("suggestion")
-      .values({
-        uid: randomUUID,
-        attachmentUrl: predictedUrl,
-        type: body.type,
-        value: body.value,
-        verificationStatus: "waiting",
-        userId: body.userId,
-        userLocation: body.userLocation,
-        challengeId: body.challengeId
-      })
-      .returningAll()
-      .executeTakeFirst();
+  const result = await db
+    .insertInto("suggestion")
+    .values({
+      uid: randomUUID,
+      attachmentUrl: predictedUrl,
+      value: body.value,
+      verificationStatus: "waiting",
+      userUid: body.userUid,
+      userLocation: body.userLocation,
+      challengeId: body.challengeId || undefined
+    })
+    .returningAll()
+    .executeTakeFirst();
 
-    await uploadImage(file, fileName, "suggestion");
+  await uploadImage(file, fileName, "suggestion");
 
-    return result;
-  } catch (error) {
-    console.error("Error creating suggestion:", error);
-    throw error;
-  }
+  return result;
 };
 
 export const deleteOneSuggestion = async (id: number | string) => {
@@ -124,7 +118,6 @@ export const updateOneSuggestion = async (
   const result = await db
     .updateTable("suggestion")
     .set({
-      type: body.type,
       value: body.value,
       verificationStatus: "waiting",
       challengeId: body.challengeId
@@ -166,11 +159,20 @@ export const verifyOneSuggestion = async (
       .insertInto("points")
       .values({
         desc: "Suggestion approved",
-        userId: suggestionResult.userId,
-        source: "suggestion",
+        userUid: suggestionResult.userUid,
+        source: suggestionResult.challengeId ? "challenge" : "suggestion",
         suggestionId: suggestionResult.id,
         points: point
       })
+      .returningAll()
+      .executeTakeFirst();
+
+    await trx
+      .updateTable("users")
+      .set((eb) => ({
+        points: eb("points", "+", point)
+      }))
+      .where("id", "=", numericId)
       .returningAll()
       .executeTakeFirst();
   });

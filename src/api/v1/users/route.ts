@@ -1,21 +1,24 @@
-import {
-  deleteUser,
-  indexAllUser,
-  indexOneUser,
-  postUser,
-  putUser,
-} from "./controller";
+import { TRequest } from "../../../types";
+import UsersController, { putUser } from "./controller";
 import { Router } from "express";
 
 const router = Router();
 
-router.get("/", indexAllUser);
+router.get("/", async (req: TRequest, res) => {
+  const controller = new UsersController();
 
-router.get("/:id", indexOneUser);
+  const result = await controller.indexAllUser();
 
-router.post("/", postUser);
+  res.status(controller.getStatus() ?? 200).json(result);
+});
 
-router.delete("/:id", deleteUser);
+router.get("/:id", async (req: TRequest, res) => {
+  const controller = new UsersController();
+
+  const result = await controller.indexOneUser(req.params.id);
+
+  res.status(controller.getStatus() ?? 200).json(result);
+});
 
 router.put("/:id", putUser);
 export default router;

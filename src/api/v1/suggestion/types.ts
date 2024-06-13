@@ -1,24 +1,22 @@
-import { ListResponse, TResponse } from "./../../../types";
+import { ListResponse, TResponse } from "../../../types";
 
 export interface SuggestionResult {
   id: number;
   uid: string;
-  type: "word" | "letter";
   value: string;
   verificationStatus: "approved" | "rejected" | "waiting";
   attachmentUrl: string;
   challengeId: number | null;
-  userId: number;
+  userUid: string;
   userLocation: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface SuggestionBody {
-  type: "word" | "letter";
   value: string;
   challengeId?: number;
-  userId: number;
+  userUid: string;
   userLocation?: string;
 }
 

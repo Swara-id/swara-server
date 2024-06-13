@@ -1,4 +1,5 @@
 import { db } from "../../../database";
+import { NotFoundError } from "../../../error/not-found";
 import { ChallengePatchBody, ChallengePostBody } from "./types";
 
 export const getAllChallenge = async () => {
@@ -17,6 +18,10 @@ export const getOneChallenge = async (id: number | string) => {
     .selectAll()
     .where("id", "=", numericId)
     .executeTakeFirst();
+
+  if (!result) {
+    throw new NotFoundError(`No challenge found with ID ${numericId}`);
+  }
 
   return result;
 };

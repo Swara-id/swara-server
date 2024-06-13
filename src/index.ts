@@ -17,6 +17,7 @@ import authRouter from "./api/v1/auth/route";
 
 import { notFoundHandler } from "./middleware/notFoundHandler";
 import { errorHandler } from "./middleware/errorHandler";
+import verifyToken from "./middleware/auth";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,6 +32,8 @@ app.use(
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(express.static("build"));
+
+app.use(verifyToken);
 
 app.use("/docs", swaggerUi.serve, async (_req: Request, res: Response) => {
   return res.send(
