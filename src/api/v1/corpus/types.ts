@@ -19,5 +19,4 @@ export interface CorpusGet extends CorpusResult {
 export interface CorpusBody {
   value: string;
   type: "word" | "letter";
-  file: File;
 }
