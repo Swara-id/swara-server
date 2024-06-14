@@ -1,18 +1,38 @@
 import { TRequest } from "../../../types";
-import UsersController, { putUser } from "./controller";
+import UsersController from "./controller";
 import { Router } from "express";
+import { UserPatchBody, UserQuery } from "./types";
 
 const router = Router();
 
-router.get("/", async (req: TRequest, res) => {
-  const controller = new UsersController();
+router.get("/", async (req: TRequest<unknown, UserQuery>, res, next) => {
+  try {
+    const controller = new UsersController();
 
-  const result = await controller.indexAllUser();
+    const result = await controller.indexAllUser();
 
-  res.status(controller.getStatus() ?? 200).json(result);
+    res.status(controller.getStatus() ?? 200).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get("/:id", async (req: TRequest, res) => {
+router.get(
+  "/leaderboard",
+  async (req: TRequest<unknown, UserQuery>, res, next) => {
+    try {
+      const controller = new UsersController();
+
+      const result = await controller.indexAllUserFromLeaderboard(req.query);
+
+      res.status(controller.getStatus() ?? 200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get("/:uid", async (req: TRequest, res) => {
   const controller = new UsersController();
 
   const result = await controller.indexOneUser(req.params.id);
@@ -20,5 +40,16 @@ router.get("/:id", async (req: TRequest, res) => {
   res.status(controller.getStatus() ?? 200).json(result);
 });
 
-router.put("/:id", putUser);
+router.patch(
+  "/:id",
+  async (req: TRequest<UserPatchBody, unknown, { uid: string }>, res) => {
+    const controller = new UsersController();
+
+    const result = await controller.patchOneUser(req.params.uid, req.body);
+
+    res.status(controller.getStatus() ?? 200).json(result);
+  }
+);
+
+// router.put("/:id", putUser);
 export default router;

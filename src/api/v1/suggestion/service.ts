@@ -172,7 +172,7 @@ export const verifyOneSuggestion = async (
       .set((eb) => ({
         points: eb("points", "+", point)
       }))
-      .where("id", "=", numericId)
+      .where("uid", "=", suggestionResult.userUid)
       .returningAll()
       .executeTakeFirst();
   });

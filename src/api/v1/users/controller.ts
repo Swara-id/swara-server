@@ -1,82 +1,74 @@
-import { Controller, Get, Path, Route, SuccessResponse } from "tsoa";
-import { ListResponse, TResponse } from "../../../types";
 import {
-  // createUser,
-  // deleteOneUser,
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Path,
+  Queries,
+  Route,
+  SuccessResponse
+} from "tsoa";
+import {
   getAllUser,
+  getAllUserFromLeaderBoard,
   getOneUser,
-  updateOneUser
+  updateUser
 } from "./service";
-import { NextFunction, Request, Response } from "express";
-import { UserResult } from "./types";
+import {
+  UserListResponse,
+  UserPatchBody,
+  UserQuery,
+  UserResponse
+} from "./types";
+import { NotFoundError } from "../../../error/not-found";
 
 @Route("users")
 export default class UsersController extends Controller {
+  @Get("/leaderboard")
+  @SuccessResponse("200", "Success")
+  public async indexAllUserFromLeaderboard(
+    @Queries() query: UserQuery
+  ): Promise<UserListResponse> {
+    const result = await getAllUserFromLeaderBoard(query);
+    this.setStatus(200);
+    return {
+      message: "success",
+      ...result
+    };
+  }
+
   @Get("/")
   @SuccessResponse("200", "Success")
-  public async indexAllUser(): Promise<ListResponse<Partial<UserResult>>> {
-    try {
-      const result = await getAllUser();
-      if (!result || (Array.isArray(result) && result.length === 0)) {
-        this.setStatus(404);
-        throw { message: "No Challenge found", status: 404 };
-      }
-      this.setStatus(200);
-      return {
-        message: "success",
-        data: result,
-        pagination: {}
-      };
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "An error occurred while fetching Challenge";
-      this.setStatus(500);
-      return {
-        message,
-        data: [],
-        pagination: {}
-      };
-    }
+  public async indexAllUser(): Promise<UserListResponse> {
+    const result = await getAllUser();
+    this.setStatus(200);
+    return {
+      message: "success",
+      data: result,
+      pagination: {}
+    };
   }
 
   @Get("{uid}")
-  public async indexOneUser(
-    @Path("uid") uid: string
-  ): Promise<TResponse<Partial<UserResult>>> {
-    try {
-      const result = await getOneUser(uid);
-      if (!result) {
-        this.setStatus(404);
-        return { message: `No Challenge found with ID ${uid}` };
-      }
-      this.setStatus(200);
-      return { message: "success", data: result };
-    } catch (error) {
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? (error.message as string)
-          : "An error occurred while fetching Challenge";
-      const status =
-        error && typeof error === "object" && "status" in error
-          ? (error.status as number)
-          : 500;
-      this.setStatus(status);
-      return { message };
+  public async indexOneUser(@Path("uid") uid: string): Promise<UserResponse> {
+    const result = await getOneUser(uid);
+    if (!result) {
+      throw new NotFoundError(`No User found with ID ${uid}`);
     }
+    this.setStatus(200);
+    return { message: "success", data: result };
+  }
+
+  @Patch("{uid}")
+  public async patchOneUser(
+    @Path("uid") uid: string,
+    @Body() body: UserPatchBody
+  ): Promise<UserResponse> {
+    const result = await updateUser(uid, body);
+    if (!result) {
+      throw new NotFoundError(`No User found with ID ${uid}`);
+    }
+    this.setStatus(200);
+    return { message: "success", data: result };
   }
 }
-
-export const putUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const result = await updateOneUser(req);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-};

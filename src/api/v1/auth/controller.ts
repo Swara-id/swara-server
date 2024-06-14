@@ -6,7 +6,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   sendEmailVerification,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  updateProfile
 } from "firebase/auth";
 import { Body, Controller, Example, Post, Route, SuccessResponse } from "tsoa";
 import { BadRequestError } from "../../../error/bad-request";
@@ -34,16 +35,25 @@ export default class UserController extends Controller {
     await createUserWithEmailAndPassword(auth, email, password);
     const user = auth.currentUser;
 
-    if (!user) {
+    if (!user || !user.email) {
       this.setStatus(401);
       return { message: "User is not authenticated" };
     }
+
+    await updateProfile(user, {
+      displayName: body.fullName
+    });
 
     const token = await user.getIdToken();
 
     await sendEmailVerification(user);
 
-    const result = await createUser(user);
+    const result = await createUser({
+      uid: user.uid,
+      email: user.email,
+      fullName: body.fullName,
+      userName: body.userName
+    });
 
     this.setStatus(201);
     return {
@@ -67,38 +77,27 @@ export default class UserController extends Controller {
 
     this.setStatus(201);
     return {
-      user: user,
       message: "User logged in successfully",
+      user,
       token
     };
   }
 
   @Post("logout")
   public async logoutUser() {
-    try {
-      await signOut(auth);
-      this.setStatus(201);
-      return { message: "User logged out successfully" };
-    } catch (error) {
-      this.setStatus(500);
-      return { message: "Internal Server Error" };
-    }
+    await signOut(auth);
+    this.setStatus(201);
+    return { message: "User logged out successfully" };
   }
 
   @Post("reset-password")
   public async resetPassword(@Body() { email }: { email: string }) {
     if (!email) {
-      this.setStatus(422);
-      return { message: "Email is required" };
+      throw new BadRequestError("Email is required");
     }
 
-    try {
-      await sendPasswordResetEmail(auth, email);
-      this.setStatus(201);
-      return { message: "Password reset email sent successfully!" };
-    } catch (error) {
-      this.setStatus(500);
-      return { message: "Internal Server Error" };
-    }
+    await sendPasswordResetEmail(auth, email);
+    this.setStatus(201);
+    return { message: "Password reset email sent successfully!" };
   }
 }

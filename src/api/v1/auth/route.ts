@@ -35,23 +35,27 @@ router.post(
   }
 );
 
-router.post("/logout", async (_req, res) => {
-  const controller = new UserController();
-
-  const result = await controller.logoutUser();
-
-  res.clearCookie("access_token");
-  res.status(controller.getStatus() ?? 201).json(result);
+router.post("/logout", async (_req, res, next) => {
+  try {
+    const controller = new UserController();
+    const result = await controller.logoutUser();
+    res.clearCookie("access_token");
+    res.status(controller.getStatus() ?? 201).json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post(
   "/reset-password",
-  async (req: TRequest<{ email: string }>, res) => {
-    const controller = new UserController();
-
-    const result = await controller.resetPassword(req.body);
-
-    res.status(controller.getStatus() ?? 201).json(result);
+  async (req: TRequest<{ email: string }>, res, next) => {
+    try {
+      const controller = new UserController();
+      const result = await controller.resetPassword(req.body);
+      res.status(controller.getStatus() ?? 201).json(result);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
