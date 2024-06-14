@@ -4,8 +4,27 @@ import path from "path";
 import { deleteFile, uploadImage } from "../../../helper/helper";
 
 export const getAllCorpus = async () => {
+  const countQb = db.selectFrom("corpus").select(db.fn.count("id").as("count"));
+
+  const total = await countQb.execute();
+  const totalData = Number(total[0]?.count ?? 0);
+
+  if (totalData === 0) {
+    return {
+      data: [],
+      pagination: {
+        totalData
+      }
+    };
+  }
+
   const result = await db.selectFrom("corpus").selectAll().execute();
-  return result;
+  return {
+    data: result,
+    pagination: {
+      totalData
+    }
+  };
 };
 
 export const getOneCorpus = async (id: number | string) => {

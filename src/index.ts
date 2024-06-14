@@ -15,6 +15,7 @@ import eventTypeRouter from "./api/v1/newsType/route";
 import challengeTypeRouter from "./api/v1/challenge/route";
 import authRouter from "./api/v1/auth/route";
 import leaderboardRouter from "./api/v1/leaderboard/route";
+import progressRouter from "./api/v1/progress/route";
 
 import { notFoundHandler } from "./middleware/notFoundHandler";
 import { errorHandler } from "./middleware/errorHandler";
@@ -63,6 +64,8 @@ app.use(`/${route}/suggestion`, suggestionRouter);
 app.use(`/${route}/auth`, authRouter);
 
 app.use(`/${route}/leaderboard`, leaderboardRouter);
+
+app.use(`/${route}/progress`, progressRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

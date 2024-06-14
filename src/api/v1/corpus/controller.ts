@@ -31,8 +31,10 @@ export default class CorpusController extends Controller {
       this.setStatus(200);
       return {
         message: "success",
-        data: result,
-        pagination: {}
+        data: result.data,
+        pagination: {
+          total: result.pagination.totalData
+        }
       };
     } catch (error) {
       const message =

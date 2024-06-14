@@ -1,3 +1,4 @@
+import { UserProgressTable } from "./models/UserProgress";
 import { ChoiceTable } from "./models/Choice";
 import { PointsTable } from "./models/Points";
 import { CorpusImageTable } from "./models/CorpusImage";
@@ -21,6 +22,7 @@ export interface Database {
   challenge: ChallengeUpdate;
   suggestion: SuggestionTable;
   points: PointsTable;
+  userProgress: UserProgressTable;
 }
 
 export interface CustomError {

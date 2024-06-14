@@ -69,7 +69,7 @@ export const getOneUser = async (uid: string) => {
     .executeTakeFirst();
 
   if (!result) {
-    throw new NotFoundError(`No news type found with UID ${uid}`);
+    throw new NotFoundError(`No user found with UID ${uid}`);
   }
 
   return result;
