@@ -22,5 +22,5 @@ export const errorHandler = (
 
   return res
     .status(customError.statusCode)
-    .json({ message: customError.message, error: err.stack?.split("\n")[0] });
+    .json({ message: customError.message });
 };
