@@ -1,0 +1,110 @@
+CREATE TABLE "corpus" (
+    "id" SERIAL PRIMARY KEY,
+    "type" TEXT NOT NULL CHECK ("type" IN ('word', 'letter')),
+    "value" TEXT NOT NULL,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
+CREATE TABLE "corpusImage" (
+    "imageUrl" TEXT NOT NULL,
+    "corpusId" INTEGER NOT NULL REFERENCES "corpus"("id") ON DELETE CASCADE,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
+CREATE TABLE "newsType" (
+    "id" SERIAL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL,
+    "createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "news" (
+  "id" SERIAL PRIMARY KEY,
+  "uid" VARCHAR(255) NOT NULL,
+  "title" VARCHAR(255) NOT NULL,
+  "description" TEXT NOT NULL,
+  "newsTypeId" INTEGER NOT NULL,
+  "dateOfEvent" TIMESTAMPTZ DEFAULT current_timestamp,
+  "thumbnailUrl" VARCHAR(255),
+  "createdAt" TIMESTAMPTZ DEFAULT current_timestamp,
+  "updatedAt" TIMESTAMPTZ DEFAULT current_timestamp
+);
+
+CREATE TABLE "users" (
+    "uid" VARCHAR(255) PRIMARY KEY NOT NULL,
+    "email" TEXT UNIQUE,
+    "fullName" VARCHAR(255) NOT NULL,
+    "userName" VARCHAR(255) UNIQUE DEFAULT NULL,
+    "gender" TEXT NOT NULL CHECK ("gender" IN ('male', 'female', "not-set)),
+    "about" TEXT NOT NULL,
+    "profilePicURL" TEXT DEFAULT NULL,
+    "points" INTEGER DEFAULT 0,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
+CREATE TABLE "quiz" (
+  "id" SERIAL PRIMARY KEY,
+  "question" VARCHAR NOT NULL,
+  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+  "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
+CREATE TABLE "choice" (
+  "id" SERIAL PRIMARY KEY,
+  "quizId" INTEGER NOT NULL REFERENCES "Quiz"("id"),
+  "value" VARCHAR NOT NULL,
+  "imageUrl" VARCHAR,
+  "isCorrect" BOOLEAN NOT NULL,
+  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+  "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
+
+CREATE TABLE "challenge" (
+    "id" SERIAL PRIMARY KEY,
+    "uid" VARCHAR(255) NOT NULL,
+    "type" TEXT NOT NULL CHECK ("type" IN ('word', 'letter')),
+    "value" TEXT NOT NULL,
+    "status" TEXT NOT NULL CHECK ("status" IN ('ongoing', 'completed')),
+    "point" INTEGER NOT NULL,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
+CREATE TABLE "suggestion" (
+    "id" SERIAL PRIMARY KEY,
+    "uid" VARCHAR(255) NOT NULL,
+    "type" TEXT NOT NULL CHECK ("type" IN ('word', 'letter')),
+    "value" TEXT NOT NULL,
+    "verificationStatus" TEXT NOT NULL CHECK ("verificationStatus" IN ('approved', 'rejected', 'waiting')),
+    "attachmentUrl" TEXT NOT NULL,
+    "challengeId" INTEGER DEFAULT NULL REFERENCES "challenge"("id") ON DELETE CASCADE,	
+    "userUid" INTEGER NOT NULL REFERENCES "users"("uid") ON DELETE CASCADE,
+    "userLocation" TEXT DEFAULT NULL,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
+
+CREATE TABLE "points" (
+  "id" SERIAL PRIMARY KEY,
+  "desc" TEXT NOT NULL,
+  "userUid" INTEGER NOT NULL REFERENCES "users"("uid") ON DELETE CASCADE,
+  "source" TEXT CHECK ("source" IN ('quiz', 'suggestion', 'challenge')) NOT NULL,
+  "quizId" INTEGER NULL REFERENCES "quiz"("id") ON DELETE CASCADE,
+  "suggestionId" INTEGER NULL REFERENCES "suggestion"("id") ON DELETE CASCADE,
+  "points" INTEGER NOT NULL,
+  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+  "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+  CHECK (("quizId" IS NULL AND "suggestionId" IS NOT NULL) OR ("quizId" IS NOT NULL AND "suggestionId" IS NULL))
+);
+
+CREATE TABLE "userProgress" (
+  "id" SERIAL PRIMARY KEY,
+  "corpusId" INTEGER NOT NULL REFERENCES "corpus" ("id") ON DELETE CASCADE,
+  "userUid" TEXT NOT NULL REFERENCES "users" ("uid") ON DELETE CASCADE,
+  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
+);
+
