@@ -20,10 +20,11 @@ Swara-server API is built using Node.js and Express, with Kysely as the database
 6. run ```docker compose up```
 7. populate database schema with [schema.txt](https://github.com/Swara-id/swara-server/blob/main/schema.txt)
 
+<details close>
+<summary><h3>(Configure `.env.example`)</h3></summary>
+<br>
 
-## Configure `.env.example`
 ```plaintext
-
 # Docker - PostgreSQL
 POSTGRES_USER=your-postgres-user
 POSTGRES_PASSWORD=your-postgres-password
@@ -57,7 +58,11 @@ PROJECT_ID=your-project-id
 BUCKET_NAME=your-bucket-name
 ```
 
+</details>
+
+
 #### If you integrate with Cloud SQL instead of using Docker:
 1. Populate the `.env` file.
 2. run ```npm run build```
 3. run ```npm start```
+4. Navigate to `http://localhost:${PORT}/docs` to access the API Documentation.
