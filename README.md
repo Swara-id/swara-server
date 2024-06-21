@@ -12,16 +12,12 @@
 ## **About**
 Swara-server API is built using Node.js and Express, with Kysely as the database query builder. It is connected to a Google Cloud Platform (GCP) database and uses Google Cloud Storage for file storage. The API endpoints are documented using Swagger.
 
-
-
 #### Installation
 1. [Download swara-server](google.com) or [GIT CLONE](https://github.com/Swara-id/swara-server.git) and unzip the download.
 2. Open the unzipped folder in your terminal.
 3. Install the dependencies by running `npm install` in your terminal. 
 4. Configure the `.env` file. See below for more details.
-6. Start Swara-server by running `npm start` in your terminal.
 
-#### configute .env.example
 ## Configure `.env.example`
 
 ```plaintext
