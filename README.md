@@ -12,16 +12,19 @@
 ## **About**
 Swara-server API is built using Node.js and Express, with Kysely as the database query builder. It is connected to a Google Cloud Platform (GCP) database and uses Google Cloud Storage for file storage. The API endpoints are documented using Swagger.
 
-#### Installation
+#### How to Use It?
 1. [Download swara-server](google.com) or [GIT CLONE](https://github.com/Swara-id/swara-server.git) and unzip the download.
 2. Open the unzipped folder in your terminal.
-3. Install the dependencies by running `npm install` in your terminal. 
 4. Configure the `.env` file. See below for more details.
+5. run ```docker build```
+6. run ```docker compose up```
+7. populate database schema with [schema.txt](https://github.com/Swara-id/swara-server/blob/main/schema.txt)
+
 
 ## Configure `.env.example`
-
 ```plaintext
-# PostgreSQL
+
+# Docker - PostgreSQL
 POSTGRES_USER=your-postgres-user
 POSTGRES_PASSWORD=your-postgres-password
 POSTGRES_DB=your-postgres-db
@@ -33,8 +36,12 @@ API_KEY=your-api-key
 # Port
 PORT=3000
 
-# Cloud SQL
+
+
+# Cloud SQL (if you use the use cloud sql database, you dont need to fill variable above)
 CONNECTION_STRING=your-cloud-sql-connection-string
+
+# Some of the Endpoints already integrated with cloud storage and firebase auth. so you must fill these variables below
 
 # Firebase
 FIREBASE_API_KEY=your-firebase-api-key
@@ -50,3 +57,7 @@ PROJECT_ID=your-project-id
 BUCKET_NAME=your-bucket-name
 ```
 
+#### If you integrate with Cloud SQL instead of using Docker:
+1. Populate the `.env` file.
+2. run ```npm run build```
+3. run ```npm start```
